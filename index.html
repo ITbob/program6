@@ -1,51 +1,62 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>Make a sprite from an image</title>
+<title>Program6</title>
 <body>
+
 <script src="pixi.js/bin/pixi.js"></script>
+<script src="Backend/Model/Item.js"></script>
+<script src="Backend/Toolbox/Rectangle.js"></script>
+<script src="Backend/Model/Ceil.js"></script>
+<script src="Backend/Model/MyMap.js"></script>
 <script>
 
 //Create a Pixi stage and renderer and add the 
 //renderer.view to the DOM
-var stage = new PIXI.Container(),
-    renderer = PIXI.autoDetectRenderer(256, 256);
+//Aliases
+var Container = PIXI.Container,
+    autoDetectRenderer = PIXI.autoDetectRenderer,
+    loader = PIXI.loader,
+    resources = PIXI.loader.resources,
+    Sprite = PIXI.Sprite;
+
+//Create a Pixi stage and renderer and add the 
+//renderer.view to the DOM
+var stage = new Container(),
+    renderer = autoDetectRenderer(350, 350);
 document.body.appendChild(renderer.view);
 
 //load an image and run the `setup` function when it's done
-PIXI.loader
-  .add("images/cat.png")
-  .load(setup);
+loader.add("Backend/Images/Program6.json").load(setup);
+var map;
+
 
 //This `setup` function will run when the image has loaded
 function setup() {
 
-  var cat = new PIXI.Sprite(PIXI.loader.resources["images/cat.png"].texture);
-  
-  //You can also create the `cat` sprite from the texture, like this:
-  //var cat = new Sprite(TextureCache["images/cat.png"]);
+	id = resources["Backend/Images/Program6.json"].textures;
 
-  /*
-  //Everything that Pixi loads is in the `loader.resources` object
-  console.log(loader.resources);
+	map = new MyMap(id);
+ 	
+	stage.addChild(rectangle(0, 0, 350, 350, 0xb5f990, 0x000000, 2));
+	
+	for (var i = 0; i < 150; i++) {
+		stage.addChild(map.ceils[i].sprite);
+		console.log(i + " x " + map.ceils[i].sprite.x);
+	}
 
-  //That means you can alternatively create the sprite from the
-  //texture in one step like this: 
-  var cat = new Sprite(loader.resources["images/cat.png"].texture);
-  */
+	renderer.render(stage);
 
-  //Add the cat to the stage
-  stage.addChild(cat);
-  
-  //Render the stage   
-  renderer.render(stage);
-
-  //If you ever need to, here's how you can clean out WebGL's GPU
-  //memory manually
-  /*
-  Object.keys(TextureCache).forEach(function(texture) {
-    TextureCache[texture].destroy(true);
-  });
-  */
+ 	//gameloop();
 }
+
+function gameloop(){
+
+	requestAnimationFrame(gameloop);
+	
+	//ceil.sprite.x += 1;
+	
+	renderer.render(stage);
+}
+
 </script>
 </body>
