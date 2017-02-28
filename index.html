@@ -8,6 +8,7 @@
 <script src="Backend/Toolbox/Rectangle.js"></script>
 <script src="Backend/Model/Ceil.js"></script>
 <script src="Backend/Model/MyMap.js"></script>
+<script src="Backend/Toolbox/Keyboardhelper.js"></script>
 <script>
 
 //Create a Pixi stage and renderer and add the 
@@ -29,6 +30,10 @@ document.body.appendChild(renderer.view);
 loader.add("Backend/Images/Program6.json").load(setup);
 var map;
 
+var left = Keyboardhelper(37),
+    up = Keyboardhelper(38),
+    right = Keyboardhelper(39),
+    down = Keyboardhelper(40);
 
 //This `setup` function will run when the image has loaded
 function setup() {
@@ -37,24 +42,50 @@ function setup() {
 
 	map = new MyMap(id);
  	
+  	up.press = function() {
+    	console.log("up");
+    	for (var i = 0; i < map.ceils.length; i++) {
+			map.ceils[i].ZoomOut();
+		}
+  	};
+
+    down.press = function() {
+        console.log("down");
+        for (var i = 0; i < map.ceils.length; i++) {
+			map.ceils[i].ZoomIn();
+		}
+  	};
+
+    left.press = function() {
+    	//Change the cat's velocity when the key is pressed
+  	};
+
+    right.press = function() {
+    	//Change the cat's velocity when the key is pressed
+  	};
+
 	stage.addChild(rectangle(0, 0, 350, 350, 0xb5f990, 0x000000, 2));
 	
-	for (var i = 0; i < 150; i++) {
+	for (var i = 0; i < map.ceils.length; i++) {
 		stage.addChild(map.ceils[i].sprite);
-		console.log(i + " x " + map.ceils[i].sprite.x);
 	}
 
-	renderer.render(stage);
+	//renderer.render(stage);
 
- 	//gameloop();
+ 	gameloop();
 }
 
 function gameloop(){
 
 	requestAnimationFrame(gameloop);
-	
-	//ceil.sprite.x += 1;
-	
+
+	//Update the current game state
+  	//state();
+
+    for (var i = 0; i < map.ceils.length; i++) {
+		map.ceils[i].Update();
+	}
+
 	renderer.render(stage);
 }
 

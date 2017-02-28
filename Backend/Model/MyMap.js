@@ -1,12 +1,14 @@
 function MyMap(resource){
 	this.ceils = [];
-	var size = 50;
+	this.BuildMap(resource);
+}
 
-	for(var l = 0; l < 15; l++){
-		for(var i = 0; i < 10; i++){
+MyMap.prototype.BuildMap = function(resource){
+	for(var l = 0; l < 3; l++){
+		for(var i = 0; i < 3; i++){
 			var ceil = new Ceil(resource);
-			ceil.sprite.width = size;
-			ceil.sprite.height = size;
+			var x = 0;
+			var y = 0;
 
 			var margin = 37.5;
 
@@ -16,18 +18,23 @@ function MyMap(resource){
 
 			if(i == 0)
 			{
-				ceil.sprite.x = 0 + margin;
+				x = 0 + margin;
 			}
 			else
 			{
-				ceil.sprite.x = i * 50 +  i * 25 + margin;
+				x = i * 50 +  i * 25 + margin;
 			}
 			
-
-
-			ceil.sprite.y = l * 25;
+			y = l * 25 - l;
+			ceil.SetPosition(x,y);
 
 			this.ceils.push(ceil);
 		}
+	}
+}
+
+MyMap.prototype.Zoom = function(value){
+	for(var i = 0; i < this.ceils.count; i++){
+		this.ceils[i].SetZoom(value);
 	}
 }
