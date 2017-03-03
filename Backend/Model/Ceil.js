@@ -24,15 +24,6 @@ function Ceil(resource){
 	this.x = 0;
 	this.y = 0;
 	this.size = 50;
-
-	this.SetPosition = function(x,y){
-	this.x = x;
-	this.y = y;
-	this.sprite.x = x;
-	this.sprite.y = y;
-	this.selectedSprite.x = x;
-	this.selectedSprite.y = y;
-	};
 }
 
 Ceil.prototype.MouseDown = function(e)
@@ -51,14 +42,14 @@ Ceil.prototype.MouseDown = function(e)
 
 //Ceil.prototype = new Item();
 
-/*Ceil.prototype.SetPosition = function(x,y){
+Ceil.prototype.SetPosition = function(x,y){
 	this.x = x;
 	this.y = y;
 	this.sprite.x = x;
 	this.sprite.y = y;
 	this.selectedSprite.x = x;
 	this.selectedSprite.y = y;
-}*/
+}
 
 Ceil.prototype.SetZoom = function(zoom){
 	
