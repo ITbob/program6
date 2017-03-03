@@ -1,70 +1,74 @@
 function Ceil(resource){
 	this.id = "ceil.png";
+	this.selectedId = "selectedCeil.png"
 	this.sprite = new Sprite(resource[this.id]);
 	this.sprite.width = 50;
 	this.sprite.height = 50;
 	this.sprite.x = 0;
 	this.sprite.y = 0;
+	this.sprite.interactive = true;
+	this.selectedSprite = new Sprite(resource[this.selectedId]);
+	this.selectedSprite.interactive = true;
+	this.selectedSprite.alpha = 0;
+	this.selectedSprite.mousedown = function(e){
+		console.log("allo");
+		if(this.alpha == 0)
+		{
+			this.alpha = 1;
+		}else
+		{
+			this.alpha = 0;
+		}
+	};
+	//this.sprite.on('mousemove', this.MouseDown);
+	this.x = 0;
+	this.y = 0;
 	this.size = 50;
-	this.zoom = 1;
-	this.acceleration = 0.4;
-	this.t = 0;
-}
 
-Ceil.prototype = new Item();
-
-Ceil.prototype.SetPosition = function(x,y){
+	this.SetPosition = function(x,y){
 	this.x = x;
 	this.y = y;
 	this.sprite.x = x;
 	this.sprite.y = y;
+	this.selectedSprite.x = x;
+	this.selectedSprite.y = y;
+	};
 }
 
-Ceil.prototype.ZoomIn = function(){
-	if(this.acceleration < 0)
-	{
-		this.t = 0;
-	}
-	this.t += 0.4;
-	this.acceleration = 0.4;
-}
-
-Ceil.prototype.ZoomOut = function(){
-	if(0 < this.acceleration)
-	{
-		this.t = 0;
-	}
-	this.t += 0.4;
-	this.acceleration = -0.4;
-}
-
-Ceil.prototype.SetZoom = function(){
-	if(this.zoom < 0.1)
-	{
-		this.t = 0;
-		this.zoom = 0.1;
-	}
-	this.sprite.x = this.zoom * this.x;
-	this.sprite.y = this.zoom * this.y;
-	this.sprite.width = this.zoom * this.size;
-	this.sprite.height = this.zoom * this.size;
-}
-
-Item.prototype.Update = function()
+Ceil.prototype.MouseDown = function(e)
 {
-	if(this.t != 0)
+	console.log("allo " + this.selectedSprite.x);
+	if(this.selectedSprite.visible == true)
 	{
-		this.t -= 0.01;
+		this.selectedSprite.visible = false;
 	}
-
-	if(Math.abs(this.t) < 0.01)
+	else
 	{
-		this.t = 0;
+		this.selectedSprite.visible = true;
 	}
-
-	this.zoom += this.acceleration * this.t * this.t;
-
-	this.SetZoom();
 }
 
 
+//Ceil.prototype = new Item();
+
+/*Ceil.prototype.SetPosition = function(x,y){
+	this.x = x;
+	this.y = y;
+	this.sprite.x = x;
+	this.sprite.y = y;
+	this.selectedSprite.x = x;
+	this.selectedSprite.y = y;
+}*/
+
+Ceil.prototype.SetZoom = function(zoom){
+	
+	this.sprite.x = zoom * this.x;
+	this.sprite.y = zoom * this.y;
+	this.sprite.width = zoom * this.size;
+	this.sprite.height = zoom * this.size;
+
+	this.selectedSprite.x = zoom * this.x;
+	this.selectedSprite.y = zoom * this.y;
+	this.selectedSprite.width = zoom * this.size;
+	this.selectedSprite.height = zoom * this.size;
+}

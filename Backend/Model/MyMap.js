@@ -1,6 +1,29 @@
 function MyMap(resource){
 	this.ceils = [];
 	this.BuildMap(resource);
+	this.zoom = 1;
+	this.acceleration = 0.4;
+	this.t = 0;
+}
+
+//Ceil.prototype = new Item();
+
+MyMap.prototype.ZoomIn = function(){
+	if(this.acceleration < 0)
+	{
+		this.t = 0;
+	}
+	this.t += 0.4;
+	this.acceleration = 0.4;
+}
+
+MyMap.prototype.ZoomOut = function(){
+	if(0 < this.acceleration)
+	{
+		this.t = 0;
+	}
+	this.t += 0.4;
+	this.acceleration = -0.4;
 }
 
 MyMap.prototype.BuildMap = function(resource){
@@ -33,8 +56,34 @@ MyMap.prototype.BuildMap = function(resource){
 	}
 }
 
-MyMap.prototype.Zoom = function(value){
-	for(var i = 0; i < this.ceils.count; i++){
-		this.ceils[i].SetZoom(value);
+
+MyMap.prototype.Update = function()
+{
+	if(this.t != 0)
+	{
+		this.t -= 0.01;
+	}
+
+	if(Math.abs(this.t) < 0.01)
+	{
+		this.t = 0;
+	}
+
+	this.zoom += this.acceleration * this.t * this.t;
+
+	if(this.zoom < 0.5)
+	{
+		this.t = 0;
+		this.zoom = 0.5;
+	}
+
+	this.SetZoom();
+}
+
+MyMap.prototype.SetZoom = function(){
+	console.log(this.zoom);
+	for(var i = 0; i < this.ceils.length; i++){
+		//console.log(i);
+		this.ceils[i].SetZoom(this.zoom);
 	}
 }

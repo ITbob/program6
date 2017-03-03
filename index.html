@@ -44,16 +44,12 @@ function setup() {
  	
   	up.press = function() {
     	console.log("up");
-    	for (var i = 0; i < map.ceils.length; i++) {
-			map.ceils[i].ZoomOut();
-		}
+    	map.ZoomOut();
   	};
 
     down.press = function() {
         console.log("down");
-        for (var i = 0; i < map.ceils.length; i++) {
-			map.ceils[i].ZoomIn();
-		}
+        map.ZoomIn();
   	};
 
     left.press = function() {
@@ -68,8 +64,8 @@ function setup() {
 	
 	for (var i = 0; i < map.ceils.length; i++) {
 		stage.addChild(map.ceils[i].sprite);
+		stage.addChild(map.ceils[i].selectedSprite);
 	}
-
 	//renderer.render(stage);
 
  	gameloop();
@@ -82,10 +78,8 @@ function gameloop(){
 	//Update the current game state
   	//state();
 
-    for (var i = 0; i < map.ceils.length; i++) {
-		map.ceils[i].Update();
-	}
-
+  	map.Update();
+  	
 	renderer.render(stage);
 }
 
