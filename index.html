@@ -53,12 +53,14 @@ function setup() {
   	};
 
     left.press = function() {
-    	//Change the cat's velocity when the key is pressed
+    	map.MoveX(-1);
   	};
 
     right.press = function() {
-    	//Change the cat's velocity when the key is pressed
+    	map.MoveX(1);
   	};
+
+
 
 	stage.addChild(rectangle(0, 0, 350, 350, 0xb5f990, 0x000000, 2));
 	
@@ -66,10 +68,13 @@ function setup() {
 		stage.addChild(map.ceils[i].sprite);
 		stage.addChild(map.ceils[i].selectedSprite);
 	}
-	//renderer.render(stage);
 
+	//renderer.render(stage);
+  	var manager = new PIXI.interaction.InteractionManager(renderer);
+	manager.on('mousedown', map.MouseDown.bind(map), false);
  	gameloop();
 }
+
 
 function gameloop(){
 
@@ -79,7 +84,7 @@ function gameloop(){
   	//state();
 
   	map.Update();
-  	
+
 	renderer.render(stage);
 }
 

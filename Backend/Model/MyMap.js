@@ -1,33 +1,46 @@
 function MyMap(resource){
 	this.ceils = [];
 	this.BuildMap(resource);
+	
+	this.x = 0;
+	this.y = 0;
+
+	this.t = 0;
 	this.zoom = 1;
 	this.acceleration = 0.4;
-	this.t = 0;
+	this.originCeil = null;
+	this.goalCeil = null;
 }
 
-//Ceil.prototype = new Item();
-
-MyMap.prototype.ZoomIn = function(){
-	if(this.acceleration < 0)
-	{
-		this.t = 0;
+MyMap.prototype.MouseDown = function(event){
+	console.log("shenme" + event.data.global.x);
+	if(this.originCeil != null && this.goalCeil != null){
+		this.originCeil.selectedSprite.alpha = 0;
+		this.goalCeil.selectedSprite.alpha = 0;
+		this.originCeil = null;
+		this.goalCeil = null;
 	}
-	this.t += 0.4;
-	this.acceleration = 0.4;
+
+	for(var i = 0; i < this.ceils.length; i++){
+		if(this.ceils[i].sprite.containsPoint(event.data.global)){
+			if(this.originCeil == null)
+			{
+				this.originCeil = this.ceils[i];
+				this.originCeil.selectedSprite.alpha = 1;
+			}
+			else
+			{
+				this.goalCeil = this.ceils[i];
+				this.goalCeil.selectedSprite.alpha = 1;
+			}
+			break;
+		}
+	}
 }
 
-MyMap.prototype.ZoomOut = function(){
-	if(0 < this.acceleration)
-	{
-		this.t = 0;
-	}
-	this.t += 0.4;
-	this.acceleration = -0.4;
-}
 
 MyMap.prototype.BuildMap = function(resource){
-	for(var l = 0; l < 3; l++){
+	for(var l = 0; l < 10; l++){
 		for(var i = 0; i < 3; i++){
 			var ceil = new Ceil(resource);
 			var x = 0;
@@ -56,6 +69,9 @@ MyMap.prototype.BuildMap = function(resource){
 	}
 }
 
+MyMap.prototype.MoveX = function(x){
+	this.x += x;
+}
 
 MyMap.prototype.Update = function()
 {
@@ -81,9 +97,25 @@ MyMap.prototype.Update = function()
 }
 
 MyMap.prototype.SetZoom = function(){
-	console.log(this.zoom);
 	for(var i = 0; i < this.ceils.length; i++){
-		//console.log(i);
-		this.ceils[i].SetZoom(this.zoom);
+		this.ceils[i].SetRelativePosition(this.x, this.y, this.zoom);
 	}
+}
+
+MyMap.prototype.ZoomIn = function(){
+	if(this.acceleration < 0)
+	{
+		this.t = 0;
+	}
+	this.t += 0.4;
+	this.acceleration = 0.4;
+}
+
+MyMap.prototype.ZoomOut = function(){
+	if(0 < this.acceleration)
+	{
+		this.t = 0;
+	}
+	this.t += 0.4;
+	this.acceleration = -0.4;
 }
