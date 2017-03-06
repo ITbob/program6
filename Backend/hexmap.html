@@ -1,0 +1,118 @@
+<!doctype html>
+<meta charset="utf-8">
+<body><script>
+    
+    /* See http://www.redblobgames.com/grids/hexagons/ */
+    
+    /* Using flat-topped hexagons, "odd-q" vertical layout
+     *    __    __
+     *   /  \__/  \__/  \
+     *   \__/  \__/  \__/
+     *   /  \__/  \__/  \
+     *   \__/  \__/  \__/
+     *   /  \__/  \__/  \
+     *   \__/  \__/  \__/
+     */
+    
+    var HexCube = function(x, y, z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+    
+    HexCube.prototype.toString = function() {
+        return "HexCube(" + [this.x, this.y, this.z].toString() + ")";
+    }
+        
+    HexCube.prototype.toAxial = function() {
+        return new HexAxial(this.x, this.y);
+    }
+    
+    HexCube.prototype.toOffset = function() {
+        var m = this.z + (this.x - (Math.abs(this.x) % 2)) / 2;
+        var n = this.x;
+        return new HexOffset(m, n);
+    }
+    
+    HexCube.prototype.isLegal = function () {  // better name?
+        // the sum of the coordinates must be zero
+        return this.x + this.y + this.z === 0 ? true : false;
+    }
+    
+    
+    var HexAxial = function(q, r) {
+        this.q = q;
+        this.r = r;
+    }
+    
+    HexAxial.prototype.toString = function() {
+        return "HexAxial(" + [this.q, this.r].toString() + ")";
+    }
+    
+    HexAxial.prototype.toCube = function() {
+        return new HexCube(this.q, this.r, -this.q - this.r);
+    }
+    
+    HexAxial.prototype.toOffset = function() {
+        return this.toCube().toOffset();
+    }
+    
+    
+    var HexOffset = function(m, n) {
+        // not following the website convention, but the mathematical matrix notation
+        // ie. m = row, n = column
+        this.m = m;  // row
+        this.n = n;  // column
+    }
+    
+    HexOffset.prototype.toString = function() {
+        return "HexOffset(" + [this.m, this.n].toString() + ")";
+    }
+    
+    HexOffset.prototype.toCube = function() {
+        var x = this.n;
+        var z = this.m - (this.n - (Math.abs(this.n) % 2)) / 2;
+        var y = -x - z
+        return new HexCube(x, y, z);
+    }
+    
+    HexOffset.prototype.toAxial = function() {
+        return this.toCube().toAxial();
+    }
+    
+    
+    // Test coordinate convertions
+    var cube = new HexCube(1, 2, -3);
+    var fakeCube = new HexCube(1, 2, 3);
+    var axial = new HexAxial(3, -2);
+    var offset = new HexOffset(2, 4);
+    
+    console.log("fakeCube.isLegal(): " + fakeCube.isLegal());
+    console.log("cube = " + cube.toString());
+    console.log("cube.isLegal(): " + cube.isLegal());
+    console.log("axial = " + axial.toString());
+    console.log("offset = " + offset.toString());
+    console.log("cube.toAxial() = " + cube.toAxial().toString());
+    console.log("cube.toOffset() = " + cube.toOffset().toString());
+    console.log("axial.toCube(), legal = " + axial.toCube().toString() + ", " + axial.toCube().isLegal());
+    console.log("axial.toOffset() = " + axial.toOffset().toString());
+    console.log("offset.toCube(), legal = " + offset.toCube().toString() + ", " + offset.toCube().isLegal());
+    console.log("offset.toAxial() = " + offset.toAxial().toString());
+    
+    // Mass test
+    for(var loop = 0; loop < 1000; loop++)
+    {
+        var x = Math.round(Math.random() * 200 - 100);
+        var y = Math.round(Math.random() * 200 - 100);
+        var z = -x - y;
+        var cube = new HexCube(x, y, z);
+        var processedCube = cube.toAxial().toOffset().toCube();
+        if(processedCube.x !== cube.x || 
+           processedCube.y !== cube.y || 
+           processedCube.z !== cube.z) {
+            console.log("Failed, ", cube, processedCube);
+        }
+    }
+    
+    
+</script></body>
