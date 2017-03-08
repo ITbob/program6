@@ -1,0 +1,48 @@
+<!doctype html>
+<meta charset="utf-8">
+<body>
+<script src="../Backend/hexmap.js"></script>
+<script>
+    
+    // Test coordinate convertions
+    (function(){
+        var cube = new HexCube(1, 2, -3);
+        var fakeCube = new HexCube(1, 2, 3);
+        var axial = new HexAxial(3, -2);
+        var offset = new HexOffset(2, 4);
+
+        console.log("fakeCube.isLegal(): " + fakeCube.isLegal());
+        console.log("cube = " + cube.toString());
+        console.log("cube.isLegal(): " + cube.isLegal());
+        console.log("axial = " + axial.toString());
+        console.log("offset = " + offset.toString());
+        console.log("cube.toAxial() = " + cube.toAxial().toString());
+        console.log("cube.toOffset() = " + cube.toOffset().toString());
+        console.log("axial.toCube(), legal = " + axial.toCube().toString() + ", " + axial.toCube().isLegal());
+        console.log("axial.toOffset() = " + axial.toOffset().toString());
+        console.log("offset.toCube(), legal = " + offset.toCube().toString() + ", " + offset.toCube().isLegal());
+        console.log("offset.toAxial() = " + offset.toAxial().toString());
+
+        // Mass test
+        console.log("Test begins");
+        for(var loop = 0; loop < 1000; loop++)
+        {
+            var x = Math.round(Math.random() * 200 - 100);
+            var y = Math.round(Math.random() * 200 - 100);
+            var z = -x - y;
+            var cube = new HexCube(x, y, z);
+            
+            if(!cube.isLegal()){
+                console.log("Fake cube: " + cube.toString());
+            }
+            
+            if(!hexEquals(cube, cube.toAxial().toOffset().toCube()) ||
+               !hexEquals(cube, cube.toOffset().toAxial().toCube())) {
+                console.log("Failed circular conversion, ", cube.toString());
+            }
+        }
+        console.log("Test finished");
+    })();
+    
+    
+</script></body>
