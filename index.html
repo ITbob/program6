@@ -7,6 +7,8 @@
 <script src="Backend/Model/Item.js"></script>
 <script src="Backend/Toolbox/Rectangle.js"></script>
 <script src="Backend/Model/Ceil.js"></script>
+<script src="Backend/Model/PathFinder/AStarSearch.js"></script>
+<script src="Backend/Model/PathFinder/AStarNode.js"></script>
 <script src="Backend/Model/MyMap.js"></script>
 <script src="Backend/Toolbox/Keyboardhelper.js"></script>
 <script>
@@ -60,13 +62,16 @@ function setup() {
     	map.MoveX(1);
   	};
 
-
-
 	stage.addChild(rectangle(0, 0, 350, 350, 0xb5f990, 0x000000, 2));
 	
-	for (var i = 0; i < map.ceils.length; i++) {
-		stage.addChild(map.ceils[i].sprite);
-		stage.addChild(map.ceils[i].selectedSprite);
+	for (var i = 0; i < map.ceils.length; i++) 
+	{
+		for(var l = 0; l < map.ceils[i].length; l++)
+		{
+			stage.addChild(map.ceils[i][l].sprite);
+			stage.addChild(map.ceils[i][l].selectedSprite);
+			stage.addChild(map.ceils[i][l].pathSprite);
+		}
 	}
 
 	//renderer.render(stage);
