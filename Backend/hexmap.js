@@ -11,6 +11,7 @@
  *   \__/  \__/  \__/
  */
 
+"use strict";
 
 
 var HexCube = function (x, y, z) {
@@ -57,6 +58,14 @@ HexCube.prototype.isLegal = function () {  // better name?
     return this.x + this.y + this.z === 0 ? true : false;
 };
 
+HexCube.prototype.getNeighbour = function (direction) {
+    var deltas = [[+1, -1,  0], [+1,  0, -1], [0, +1, -1],
+                  [-1, +1,  0], [-1,  0, +1], [0, -1, +1]];
+    return new HexCube(this.x + (deltas[direction][0]),
+                       this.y + (deltas[direction][1]),
+                       this.z + (deltas[direction][2]));
+};
+
 
 HexAxial.prototype.toString = function () {
     return "HexAxial(" + [this.q, this.r].toString() + ")";
@@ -74,7 +83,12 @@ HexAxial.prototype.toOffset = function () {
     return this.toCube().toOffset();
 };
 
-
+HexAxial.prototype.getNeighbour = function (direction) {
+    var deltas = [[+1,  0], [+1, -1], [ 0, -1],
+                  [-1,  0], [-1, +1], [ 0, +1]];
+    return new HexAxial(this.q + (deltas[direction][0]),
+                        this.r + (deltas[direction][1]));
+};
 
 HexOffset.prototype.toString = function () {
     return "HexOffset(" + [this.m, this.n].toString() + ")";
@@ -93,6 +107,11 @@ HexOffset.prototype.toAxial = function () {
 
 HexOffset.prototype.toOffset = function () {
     return new HexOffset(this.m, this.n);
+};
+
+HexOffset.prototype.getNeighbour = function (direction) {
+    // Offset coordinates has different sub type, convert to cube for agnostic method
+    return new this.toCube().getNeighbour(direction).toOffset();
 };
 
 
