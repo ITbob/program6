@@ -4,17 +4,18 @@ function AStarSearch(){
 
 AStarSearch.prototype.ConstructPath = function(node){
 	var path = [];
+	var goalNode = node;
 	while(node.pathParent != null)
 	{
+		//console.log("rw:" + ((node.ceil.row)+1) + " cl:" + ((node.ceil.column)+1) + " dst:" + node.GetDistance(goalNode));
 		path.splice(0, 0, node);
 		node.ceil.selectedSprite.alpha = 0;
 		node.ceil.pathSprite.alpha = 1;
-		console.log("p: " + node.ceil.GetMiddle());
 		node = node.pathParent;
 	}
 	node.ceil.selectedSprite.alpha = 0;
 	node.ceil.pathSprite.alpha = 1;
-	console.log("length = " + path.length);
+	//console.log("length = " + path.length);
 	return path;
 };
 
@@ -53,17 +54,19 @@ AStarSearch.prototype.Append = function(list, node){
 	{
 		list.push(node);
 	}
-	
-	for(var i = 0; i < list.length; i++)
+	var i = 0;
+	while(i < list.length)
 	{
-		console.log(i + " : Item : " + list[i].GetCost())
+		//console.log(i + " : Item : " + list[i].GetCost())
 		if(node.Compare(list[i]))
 		{
-			console.log(i + " -> Insert : " + node.GetCost())
-			list.splice(i,0,node);
+			//console.log(i + " Insert -> rw:" + ((node.ceil.row)+1) + " cl:" + ((node.ceil.column)+1));
+			list.splice(i, 0, node);
 			return;
 		}
+		i += 1;
 	}
+	//console.log(i + " Insert -> rw:" + ((node.ceil.row)+1) + " cl:" + ((node.ceil.column)+1));
 	list.push(node);
 };
 
@@ -76,20 +79,19 @@ AStarSearch.prototype.FindPath = function(startNode, goalNode){
 	startNode.pathParent = null;
 	this.Append(openList, startNode);
 
-	var l = 0;
-
 	while(0 < openList.length)
 	{
+		console.log("---> GET " + ((openList[0].ceil.row)+1) + " cl:" + ((openList[0].ceil.column)+1))
 		var currentNode = openList[0];
 		openList.splice(0,1);
 
 		if(currentNode.ceil == goalNode.ceil)
 		{
-			console.log("YES WE DID");
 			return this.ConstructPath(currentNode);
 		}
 
 		var ceilNeighbourhood = currentNode.ceil.GetNeighbourhood(); 
+
 		for(var i = 0; i < ceilNeighbourhood.length; i++)
 		{
 			var neighbourCeil = ceilNeighbourhood[i];
@@ -118,7 +120,6 @@ AStarSearch.prototype.FindPath = function(startNode, goalNode){
 			}
 		}
 		closeList.push(currentNode);
-		l += 1;
 	}
 
 	//no path found

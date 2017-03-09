@@ -14,7 +14,7 @@ AStarNode.prototype.GetCost = function(){
 };
 
 AStarNode.prototype.GetNeighbourCost = function(node){
-	return 1;
+	return this.GetDistance(node);
 };
 
 AStarNode.prototype.GetDistance = function(node){
@@ -29,5 +29,5 @@ AStarNode.prototype.GetDistance = function(node){
 
 AStarNode.prototype.GetEstimatedCost = function(node)
 { 
-	return this.GetDistance(node) / node.ceil.size;
+	return this.GetDistance(node);// / node.ceil.size;
 };

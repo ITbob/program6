@@ -68,6 +68,8 @@ MyMap.prototype.BuildMap = function(resource){
 			
 			y = l * 25 - l;
 			ceil.SetPosition(x,y);
+			ceil.row = l;
+			ceil.column = i;
 
 			this.ceils[l].push(ceil);
 		}
@@ -77,72 +79,74 @@ MyMap.prototype.BuildMap = function(resource){
 		for(var i = 0; i < this.ceils[l].length; i++){
 			if(l % 2 == 0)
 			{
-				if(0 <= l-2)
+				if(0 <= (l-2))
 				{
-					this.ceils[l][i].top = this.ceils[l-2][i];
+					this.ceils[l][i].top = this.ceils[l-2][i]; //top
 				}
 				
-				if(0 <= l-1)
+				if(0 <= (l-1))
 				{
-					this.ceils[l][i].rightTop = this.ceils[l-1][i];
+					this.ceils[l][i].rightTop = this.ceils[l-1][i]; //right top
 				}
 				
-				if(l+1 < this.ceils.length)
+				if((l+1) < this.ceils.length)
 				{
-					this.ceils[l][i].rightBottom = this.ceils[l+1][i];
+					this.ceils[l][i].rightBottom = this.ceils[l+1][i]; // right bottom
 				}
 
-				if(l+2 < this.ceils.length)
+				if((l+2) < this.ceils.length)
 				{
-					this.ceils[l][i].bottom = this.ceils[l+2][i];
+					this.ceils[l][i].bottom = this.ceils[l+2][i]; //bottom
 				}
 
-				if(l+1 < this.ceils.length && 0 <= i-1)
+				if((l+1) < this.ceils.length && 0 <= (i-1))
 				{
-					this.ceils[l][i].leftBottom = this.ceils[l+1][i-1];
+					this.ceils[l][i].leftBottom = this.ceils[l+1][i-1]; // left bottom
 				}
 				
-				if(0 <= l-1 && 0 <= i-1)
+				if(0 <= (l-1) && 0 <= (i-1))
 				{
-					this.ceils[l][i].leftTop = this.ceils[l-1][i-1];
+					this.ceils[l][i].leftTop = this.ceils[l-1][i-1]; // left top
 				}
 			}
 			else
 			{
-				if(0 <= l-2)
+				if(0 <= (l-2))
 				{
-					this.ceils[l][i].top = this.ceils[l-2][i];
+					this.ceils[l][i].top = this.ceils[l-2][i]; // top
 				}
 				
-				if(0 <= l-1 && i+1 < this.ceils[l].length)
+				if(0 <= (l-1) && (i+1) < this.ceils[l].length)
 				{
-					this.ceils[l][i].rightTop = this.ceils[l-1][i+1];
+					this.ceils[l][i].rightTop = this.ceils[l-1][i+1]; // right top
 				}
 				
-				if(l+1 < this.ceils.length && i+1 < this.ceils[l].length)
+				if((l+1) < this.ceils.length && (i+1) < this.ceils[l].length)
 				{
-					this.ceils[l][i].rightBottom = this.ceils[l+1][i+1];
+					this.ceils[l][i].rightBottom = this.ceils[l+1][i+1]; // right bottom
 				}
 
-				if(l+2 < this.ceils.length)
+				if((l+2) < this.ceils.length)
 				{
-					this.ceils[l][i].bottom = this.ceils[l+2][i];
+					this.ceils[l][i].bottom = this.ceils[l+2][i]; // bottom
 				}
 
-				if(l+1 < this.ceils.length)
+				if((l+1) < this.ceils.length)
 				{
-					this.ceils[l][i].leftBottom = this.ceils[l+1][i];
+					this.ceils[l][i].leftBottom = this.ceils[l+1][i]; // left bottom
 				}
 				
-				if(0 <= l-1)
+				if(0 <= (l-1))
 				{
-					this.ceils[l][i].leftTop = this.ceils[l-1][i];
+					this.ceils[l][i].leftTop = this.ceils[l-1][i]; // left top
 				}
 			}
-
-
 		}
 	}
+
+	this.ceils[4][1].SetBlocked();
+	this.ceils[2][1].SetBlocked();
+	this.ceils[6][1].SetBlocked();
 };
 
 
