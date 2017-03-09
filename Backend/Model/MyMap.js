@@ -75,35 +75,71 @@ MyMap.prototype.BuildMap = function(resource){
 
 	for(var l = 0; l < this.ceils.length; l++){
 		for(var i = 0; i < this.ceils[l].length; i++){
-			if(0 <= l-2)
+			if(l % 2 == 0)
 			{
-				this.ceils[l][i].top = this.ceils[l-2][i];
+				if(0 <= l-2)
+				{
+					this.ceils[l][i].top = this.ceils[l-2][i];
+				}
+				
+				if(0 <= l-1)
+				{
+					this.ceils[l][i].rightTop = this.ceils[l-1][i];
+				}
+				
+				if(l+1 < this.ceils.length)
+				{
+					this.ceils[l][i].rightBottom = this.ceils[l+1][i];
+				}
+
+				if(l+2 < this.ceils.length)
+				{
+					this.ceils[l][i].bottom = this.ceils[l+2][i];
+				}
+
+				if(l+1 < this.ceils.length && 0 <= i-1)
+				{
+					this.ceils[l][i].leftBottom = this.ceils[l+1][i-1];
+				}
+				
+				if(0 <= l-1 && 0 <= i-1)
+				{
+					this.ceils[l][i].leftTop = this.ceils[l-1][i-1];
+				}
 			}
-			
-			if(0 <= l-1 && i+1 < this.ceils[l].length)
+			else
 			{
-				this.ceils[l][i].rightTop = this.ceils[l-1][i];
-			}
-			
-			if(l+1 < this.ceils.length && i+1 < this.ceils[l].length)
-			{
-				this.ceils[l][i].rightBottom = this.ceils[l+1][i];
+				if(0 <= l-2)
+				{
+					this.ceils[l][i].top = this.ceils[l-2][i];
+				}
+				
+				if(0 <= l-1 && i+1 < this.ceils[l].length)
+				{
+					this.ceils[l][i].rightTop = this.ceils[l-1][i+1];
+				}
+				
+				if(l+1 < this.ceils.length && i+1 < this.ceils[l].length)
+				{
+					this.ceils[l][i].rightBottom = this.ceils[l+1][i+1];
+				}
+
+				if(l+2 < this.ceils.length)
+				{
+					this.ceils[l][i].bottom = this.ceils[l+2][i];
+				}
+
+				if(l+1 < this.ceils.length)
+				{
+					this.ceils[l][i].leftBottom = this.ceils[l+1][i];
+				}
+				
+				if(0 <= l-1)
+				{
+					this.ceils[l][i].leftTop = this.ceils[l-1][i];
+				}
 			}
 
-			if(l+2 < this.ceils.length)
-			{
-				this.ceils[l][i].bottom = this.ceils[l+2][i];
-			}
-
-			if(l+1 < this.ceils.length && 0 <= i-1)
-			{
-				this.ceils[l][i].leftBottom = this.ceils[l+1][i-1];
-			}
-			
-			if(0 <= l-1 && 0 <=  i-1)
-			{
-				this.ceils[l][i].leftTop = this.ceils[l-1][i-1];
-			}
 
 		}
 	}
