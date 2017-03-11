@@ -84,8 +84,8 @@ HexAxial.prototype.toOffset = function () {
 };
 
 HexAxial.prototype.getNeighbour = function (direction) {
-    var deltas = [[+1,  0], [+1, -1], [ 0, -1],
-                  [-1,  0], [-1, +1], [ 0, +1]];
+    var deltas = [[+1, -1], [+1,  0], [0, +1],
+                  [-1, +1], [-1,  0], [0, -1]];
     return new HexAxial(this.q + (deltas[direction][0]),
                         this.r + (deltas[direction][1]));
 };
@@ -111,7 +111,7 @@ HexOffset.prototype.toOffset = function () {
 
 HexOffset.prototype.getNeighbour = function (direction) {
     // Offset coordinates has different sub type, convert to cube for agnostic method
-    return new this.toCube().getNeighbour(direction).toOffset();
+    return this.toCube().getNeighbour(direction).toOffset();
 };
 
 
