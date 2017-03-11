@@ -66,6 +66,19 @@ HexCube.prototype.getNeighbour = function (direction) {
                        this.z + (deltas[direction][2]));
 };
 
+HexCube.prototype.toPixel = function (size) {
+    // size is the distance between the center and a corner.
+    // Default is 1 if not given
+    if (size === undefined) {
+        size = 1;
+    }
+    
+    var x = size * 3 / 2 * this.x;
+    var y = size * Math.sqrt(3) * (this.y + this.x / 2);
+    
+    return [x, y];
+};
+
 
 HexAxial.prototype.toString = function () {
     return "HexAxial(" + [this.q, this.r].toString() + ")";
@@ -90,6 +103,12 @@ HexAxial.prototype.getNeighbour = function (direction) {
                         this.r + (deltas[direction][1]));
 };
 
+HexAxial.prototype.toPixel = function (size) {
+    // size is option, see HexCube method
+    return this.toCube().toPixel();
+};
+
+
 HexOffset.prototype.toString = function () {
     return "HexOffset(" + [this.m, this.n].toString() + ")";
 };
@@ -112,6 +131,11 @@ HexOffset.prototype.toOffset = function () {
 HexOffset.prototype.getNeighbour = function (direction) {
     // Offset coordinates has different sub type, convert to cube for agnostic method
     return this.toCube().getNeighbour(direction).toOffset();
+};
+
+HexOffset.prototype.toPixel = function (size) {
+    // size is option, see HexCube method
+    return this.toCube().toPixel();
 };
 
 
