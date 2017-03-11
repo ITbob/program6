@@ -120,3 +120,16 @@ var hexEquals = function (a, b) {
     b = b.toCube();
     return a.x === b.x && a.y === b.y && a.z === b.z;
 };
+
+
+var hexDistance = function (a, b) {
+    var max = Math.max;
+    var abs = Math.abs;
+    
+    a = a.toCube();
+    b = b.toCube();
+    
+    return max(abs(a.x - b.x), abs(a.y - b.y), abs(a.z - b.z));
+};
+
+
