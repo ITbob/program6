@@ -99,5 +99,17 @@
         
     })();
     
+    // Test distance
+    (function(){
+        console.log("Distances");
+        for(var loop = 0; loop < 10; loop++) {
+            // offset coordinates are more readable
+            var cubes = [randomHexCube().toOffset(), randomHexCube().toOffset()];
+            console.log(cubes.map(function(c){return c.toString();}),
+                        " -> ",
+                        hexDistance(cubes[0], cubes[1]));
+        }
+    })();
+    
     
 </script></body>
