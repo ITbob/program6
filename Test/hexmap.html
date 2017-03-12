@@ -4,6 +4,16 @@
 <script src="../Backend/hexmap.js"></script>
 <script>
     
+    var AssertionError = function (message) {
+        this.message = message;
+    }
+    
+    var assert = function (test, message) {
+        if (!test) {
+            throw new AssertionError(message);
+        }
+    }
+    
     var randomHexCube = function () {
         var x = Math.round(Math.random() * 200 - 100);
         var y = Math.round(Math.random() * 200 - 100);
@@ -15,11 +25,18 @@
     // Test coordinate conversions
     (function(){
         var cube = new HexCube(1, 2, -3);
-        var fakeCube = new HexCube(1, 2, 3);
+        try {
+            var fakeCube = new HexCube(1, 2, 3);
+        } catch (e) {
+            if (e instanceof RangeError) {
+                console.log("Detected fake cube");
+            } else {
+                throw e;
+            }
+        }
         var axial = new HexAxial(3, -2);
         var offset = new HexOffset(2, 4);
-
-        console.log("fakeCube.isLegal(): " + fakeCube.isLegal());
+        
         console.log("cube = " + cube.toString());
         console.log("cube.isLegal(): " + cube.isLegal());
         console.log("axial = " + axial.toString());
@@ -111,15 +128,43 @@
         }
     })();
     
-    // Test conversion to pixel
+    // Test conversion from/to pixel
     (function(){
-        console.log("Distances");
+        console.log("To pixels");
         for(var loop = 0; loop < 10; loop++) {
             // offset coordinates are more readable
-            var coord =randomHexCube().toOffset();
-            console.log(coord.toString(),
-                        " -> ",
-                        coord.toPixel().toString());
+            var coord = randomHexCube().toOffset();
+            console.log(coord.toString(), " -> ", coord.toPixel().toString());
+        }
+        
+        console.log("From pixels");
+        for(var loop = 0; loop < 10; loop++) {
+            var x = Math.random() * 2000 - 1000;
+            var y = Math.random() * 2000 - 1000;
+            var coord = HexCube.fromPixel(x, y, 10).toOffset();
+            console.log([x, y].toString(), " -> ", coord.toString());
+        }
+        
+        // Mass test
+        try {
+            for(var loop = 0; loop < 1000; loop++) {
+                var cube = randomHexCube();
+                px = cube.toPixel();
+                assert(hexEquals(cube, HexCube.fromPixel(px[0], px[1])));
+            }
+            console.log("Pixel conversion test passed");
+            return true;
+        } catch (e) {
+            if (e instanceof AssertionError) {
+                console.log("Test failed: ",
+                            cube.toString(),
+                            " -> ",
+                            px.toString(),
+                            " -> ",
+                            HexCube.fromPixel(pxCoord[0], px[1]).toString());
+            } else {
+                throw e;
+            }
         }
     })();
     
