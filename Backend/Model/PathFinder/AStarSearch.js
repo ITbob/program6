@@ -4,11 +4,11 @@ function AStarSearch(){
 
 AStarSearch.prototype.ConstructPath = function(node){
 	var path = [];
-	var goalNode = node;
+	//var goalNode = node;
 	while(node.pathParent != null)
 	{
 		//console.log("rw:" + ((node.ceil.row)+1) + " cl:" + ((node.ceil.column)+1) + " dst:" + node.GetDistance(goalNode));
-		path.splice(0, 0, node);
+		path.splice(0, 0, node.ceil);
 		node.ceil.selectedSprite.alpha = 0;
 		node.ceil.pathSprite.alpha = 1;
 		node = node.pathParent;

@@ -1,7 +1,7 @@
 function MyMap(resource){
 	this.ceils = [];
 	this.aStarSearch = new AStarSearch();
-
+	this.unit = new Unit(resource);
 	this.x = 0;
 	this.y = 0;
 
@@ -29,13 +29,16 @@ MyMap.prototype.MouseDown = function(event){
 				if(this.originCeil == null)
 				{
 					this.originCeil = this.ceils[i][l];
-					this.originCeil.selectedSprite.alpha = 1;
+					//this.originCeil.selectedSprite.alpha = 1;
+					this.unit.SetPosition(this.originCeil.x,this.originCeil.y);
+					console.log("allo");
 				}
 				else
 				{
 					this.goalCeil = this.ceils[i][l];
 					this.goalCeil.selectedSprite.alpha = 1;
-					this.aStarSearch.FindPath(new AStarNode(this.originCeil), new AStarNode(this.goalCeil));
+					var path = this.aStarSearch.FindPath(new AStarNode(this.originCeil), new AStarNode(this.goalCeil));
+					this.unit.goalCeils = path;
 				}
 				break;
 			}
@@ -44,9 +47,9 @@ MyMap.prototype.MouseDown = function(event){
 };
 
 MyMap.prototype.BuildMap = function(resource){
-	for(var l = 0; l < 10; l++){
+	for(var l = 0; l < 15; l++){
 		this.ceils[l] = [];
-		for(var i = 0; i < 3; i++){
+		for(var i = 0; i < 10; i++){
 			var ceil = new Ceil(resource);
 			var x = 0;
 			var y = 0;
@@ -144,14 +147,27 @@ MyMap.prototype.BuildMap = function(resource){
 		}
 	}
 
-	this.ceils[4][1].SetBlocked();
-	this.ceils[2][1].SetBlocked();
-	this.ceils[6][1].SetBlocked();
+	this.ceils[10][4].SetBlocked();
+	this.ceils[11][3].SetBlocked();
+	
+	this.ceils[2][4].SetBlocked();
+	this.ceils[3][3].SetBlocked();
+	
+	this.ceils[4][3].SetBlocked();
+	this.ceils[6][3].SetBlocked();
+	this.ceils[8][3].SetBlocked();
+	this.ceils[10][3].SetBlocked();
+	this.ceils[12][3].SetBlocked();
+	//this.ceils[14][3].SetBlocked();
 };
 
 
 MyMap.prototype.MoveX = function(x){
 	this.x += x;
+};
+
+MyMap.prototype.MoveY = function(x){
+	this.y += x;
 };
 
 MyMap.prototype.Update = function()
@@ -183,6 +199,7 @@ MyMap.prototype.SetZoom = function(){
 			this.ceils[i][l].SetRelativePosition(this.x, this.y, this.zoom);
 		}
 	}
+	this.unit.SetRelativePosition(this.x, this.y, this.zoom);
 };
 
 MyMap.prototype.ZoomIn = function(){

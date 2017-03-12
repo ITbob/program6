@@ -9,6 +9,7 @@
 <script src="Backend/Model/Ceil.js"></script>
 <script src="Backend/Model/PathFinder/AStarSearch.js"></script>
 <script src="Backend/Model/PathFinder/AStarNode.js"></script>
+<script src="Backend/Model/Unit.js"></script>
 <script src="Backend/Model/MyMap.js"></script>
 <script src="Backend/Toolbox/Keyboardhelper.js"></script>
 <script>
@@ -55,15 +56,16 @@ function setup() {
   	};
 
     left.press = function() {
-    	map.MoveX(-1);
+    	map.MoveY(-10);
   	};
 
     right.press = function() {
-    	map.MoveX(1);
+    	map.MoveY(10);
   	};
 
 	stage.addChild(rectangle(0, 0, 350, 350, 0xb5f990, 0x000000, 2));
 	
+
 	for (var i = 0; i < map.ceils.length; i++) 
 	{
 		for(var l = 0; l < map.ceils[i].length; l++)
@@ -75,8 +77,13 @@ function setup() {
 		}
 	}
 
+  for(var i = 0; i < map.unit.sprites.length; i++)
+  {
+    stage.addChild(map.unit.sprites[i]);
+  }
+
 	//renderer.render(stage);
-  	var manager = new PIXI.interaction.InteractionManager(renderer);
+  var manager = new PIXI.interaction.InteractionManager(renderer);
 	manager.on('mousedown', map.MouseDown.bind(map), false);
  	gameloop();
 }
@@ -87,9 +94,10 @@ function gameloop(){
 	requestAnimationFrame(gameloop);
 
 	//Update the current game state
-  	//state();
-
-  	map.Update();
+  //state();
+  
+  map.unit.Update();
+  map.Update();
 
 	renderer.render(stage);
 }
