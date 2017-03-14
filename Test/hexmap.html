@@ -4,14 +4,39 @@
 <script src="../Backend/hexmap.js"></script>
 <script>
     
-    // Test coordinate convertions
+    var AssertionError = function (message) {
+        this.message = message;
+    }
+    
+    var assert = function (test, message) {
+        if (!test) {
+            throw new AssertionError(message);
+        }
+    }
+    
+    var randomHexCube = function () {
+        var x = Math.round(Math.random() * 200 - 100);
+        var y = Math.round(Math.random() * 200 - 100);
+        var z = -x - y;
+        return new HexCube(x, y, z);
+    };
+    
+    
+    // Test coordinate conversions
     (function(){
         var cube = new HexCube(1, 2, -3);
-        var fakeCube = new HexCube(1, 2, 3);
+        try {
+            var fakeCube = new HexCube(1, 2, 3);
+        } catch (e) {
+            if (e instanceof RangeError) {
+                console.log("Detected fake cube");
+            } else {
+                throw e;
+            }
+        }
         var axial = new HexAxial(3, -2);
         var offset = new HexOffset(2, 4);
-
-        console.log("fakeCube.isLegal(): " + fakeCube.isLegal());
+        
         console.log("cube = " + cube.toString());
         console.log("cube.isLegal(): " + cube.isLegal());
         console.log("axial = " + axial.toString());
@@ -24,24 +49,123 @@
         console.log("offset.toAxial() = " + offset.toAxial().toString());
 
         // Mass test
+        var foundError = false;
         console.log("Test begins");
-        for(var loop = 0; loop < 1000; loop++)
-        {
-            var x = Math.round(Math.random() * 200 - 100);
-            var y = Math.round(Math.random() * 200 - 100);
-            var z = -x - y;
-            var cube = new HexCube(x, y, z);
+        for(var loop = 0; loop < 1000; loop++) {
+            var cube = randomHexCube();
             
             if(!cube.isLegal()){
                 console.log("Fake cube: " + cube.toString());
+                foundError = true;
             }
             
             if(!hexEquals(cube, cube.toAxial().toOffset().toCube()) ||
                !hexEquals(cube, cube.toOffset().toAxial().toCube())) {
                 console.log("Failed circular conversion, ", cube.toString());
+                foundError = true;
             }
         }
-        console.log("Test finished");
+        if(foundError){
+            console.log("Found errors");
+            return false;
+        } else {
+            console.log("Coordinates conversions passed");
+            return true;
+        }
+    })();
+    
+    // Test neighbours
+    (function(){
+        var coordinates = [new HexCube(1, 2, -3), new HexAxial(3, -2), new HexOffset(2, 4)];
+        
+        console.log("Showing neighbours");
+        
+        coordinates.forEach(function(coord){
+            var report = coord.toString() + " -> ";
+            for(var direction = 0; direction < 6; direction++){
+                report += direction + ": " + coord.getNeighbour(direction).toString() + ", ";
+            };
+            console.log(report);
+        });
+        
+        // Mass test
+        var foundError = false;
+        for(var loop = 0; loop < 1000; loop++) {
+            var cube = randomHexCube();
+            
+            for(var direction = 0; direction < 6; direction++){
+                var neighbours = [
+                    cube.getNeighbour(direction), 
+                    cube.toAxial().getNeighbour(direction),
+                    cube.toOffset().getNeighbour(direction)];
+                if(!hexEquals(neighbours[0], neighbours[1]) ||
+                   !hexEquals(neighbours[1], neighbours[2])) {
+                    console.log("Different coordinates give different neighbour: ",
+                               cube.toString(), " -> ", neighbours.map(function(n){return n.toCube().toString();}));
+                    foundError = true;
+                }
+            }
+        }
+        if(foundError) {
+            console.log("Found errors");
+            return false;
+        } else {
+            console.log("Neighbours test passed");
+            return true;
+        }
+        
+    })();
+    
+    // Test distance
+    (function(){
+        console.log("Distances");
+        for(var loop = 0; loop < 10; loop++) {
+            // offset coordinates are more readable
+            var cubes = [randomHexCube().toOffset(), randomHexCube().toOffset()];
+            console.log(cubes.map(function(c){return c.toString();}).toString(),
+                        " -> ",
+                        hexDistance(cubes[0], cubes[1]));
+        }
+    })();
+    
+    // Test conversion from/to pixel
+    (function(){
+        console.log("To pixels");
+        for(var loop = 0; loop < 10; loop++) {
+            // offset coordinates are more readable
+            var coord = randomHexCube().toOffset();
+            console.log(coord.toString(), " -> ", coord.toPixel().toString());
+        }
+        
+        console.log("From pixels");
+        for(var loop = 0; loop < 10; loop++) {
+            var x = Math.random() * 2000 - 1000;
+            var y = Math.random() * 2000 - 1000;
+            var coord = HexCube.fromPixel(x, y, 10).toOffset();
+            console.log([x, y].toString(), " -> ", coord.toString());
+        }
+        
+        // Mass test
+        try {
+            for(var loop = 0; loop < 1000; loop++) {
+                var cube = randomHexCube();
+                px = cube.toPixel();
+                assert(hexEquals(cube, HexCube.fromPixel(px[0], px[1])));
+            }
+            console.log("Pixel conversion test passed");
+            return true;
+        } catch (e) {
+            if (e instanceof AssertionError) {
+                console.log("Test failed: ",
+                            cube.toString(),
+                            " -> ",
+                            px.toString(),
+                            " -> ",
+                            HexCube.fromPixel(pxCoord[0], px[1]).toString());
+            } else {
+                throw e;
+            }
+        }
     })();
     
     
