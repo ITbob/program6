@@ -1,6 +1,6 @@
 {"frames": {
 
-"unit1.png":
+"wheels1.png":
 {
 	"frame": {"x":0,"y":300,"w":300,"h":300},
 	"rotated": false,
@@ -9,7 +9,7 @@
 	"sourceSize": {"w":300,"h":300},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"unit2.png":
+"wheels2.png":
 {
 	"frame": {"x":300,"y":300,"w":300,"h":300},
 	"rotated": false,
@@ -18,7 +18,7 @@
 	"sourceSize": {"w":300,"h":300},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"unit3.png":
+"wheels3.png":
 {
 	"frame": {"x":600,"y":300,"w":300,"h":300},
 	"rotated": false,
@@ -27,7 +27,7 @@
 	"sourceSize": {"w":300,"h":300},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"unit4.png":
+"wheels4.png":
 {
 	"frame": {"x":900,"y":300,"w":300,"h":300},
 	"rotated": false,
@@ -36,7 +36,7 @@
 	"sourceSize": {"w":300,"h":300},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"unit5.png":
+"wheels5.png":
 {
 	"frame": {"x":1200,"y":300,"w":300,"h":300},
 	"rotated": false,
@@ -45,9 +45,53 @@
 	"sourceSize": {"w":300,"h":300},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"unit6.png":
+"wheels6.png":
 {
 	"frame": {"x":1500,"y":300,"w":300,"h":300},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+	"sourceSize": {"w":300,"h":300},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"wheels7.png":
+{
+	"frame": {"x":1800,"y":300,"w":300,"h":300},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+	"sourceSize": {"w":300,"h":300},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"unitTop.png":
+{
+	"frame": {"x":300,"y":600,"w":300,"h":300},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+	"sourceSize": {"w":300,"h":300},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"unitBottom.png":
+{
+	"frame": {"x":0,"y":600,"w":300,"h":300},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+	"sourceSize": {"w":300,"h":300},
+	"pivot": {"x":0.5,"y":0.5}
+},"unitTop2.png":
+{
+	"frame": {"x":900,"y":600,"w":300,"h":300},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+	"sourceSize": {"w":300,"h":300},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"unitBottom2.png":
+{
+	"frame": {"x":600,"y":600,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},

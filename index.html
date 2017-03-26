@@ -10,6 +10,7 @@
 <script src="Backend/Model/PathFinder/AStarSearch.js"></script>
 <script src="Backend/Model/PathFinder/AStarNode.js"></script>
 <script src="Backend/Model/Unit.js"></script>
+<script src="Backend/Model/AccelerationEffectManager.js"></script>
 <script src="Backend/Model/MyMap.js"></script>
 <script src="Backend/Toolbox/Keyboardhelper.js"></script>
 <script>
@@ -26,7 +27,7 @@ var Container = PIXI.Container,
 //Create a Pixi stage and renderer and add the 
 //renderer.view to the DOM
 var stage = new Container(),
-    renderer = autoDetectRenderer(350, 350);
+    renderer = autoDetectRenderer(600, 600);
 document.body.appendChild(renderer.view);
 
 //load an image and run the `setup` function when it's done
@@ -46,24 +47,22 @@ function setup() {
 	map = new MyMap(id);
  	
   	up.press = function() {
-    	console.log("up");
-    	map.ZoomOut();
+      map.MoveY(1);
   	};
 
     down.press = function() {
-        console.log("down");
-        map.ZoomIn();
+      map.MoveY(0);
   	};
 
     left.press = function() {
-    	map.MoveY(-10);
+    	map.MoveX(1);
   	};
 
     right.press = function() {
-    	map.MoveY(10);
+    	map.MoveX(0);
   	};
 
-	stage.addChild(rectangle(0, 0, 350, 350, 0xb5f990, 0x000000, 2));
+	stage.addChild(rectangle(0, 0, 600, 600, 0xb5f990, 0x000000, 2));
 	
 
 	for (var i = 0; i < map.ceils.length; i++) 
@@ -84,10 +83,12 @@ function setup() {
 
 	//renderer.render(stage);
   var manager = new PIXI.interaction.InteractionManager(renderer);
-	manager.on('mousedown', map.MouseDown.bind(map), false);
+  manager.on('mousedown', map.MouseDown.bind(map), false);
+  window.addEventListener('mousewheel', map.MouseWheel.bind(map), false);
+
+
  	gameloop();
 }
-
 
 function gameloop(){
 

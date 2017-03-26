@@ -1,16 +1,33 @@
 function MyMap(resource){
 	this.ceils = [];
 	this.aStarSearch = new AStarSearch();
-	this.unit = new Unit(resource);
-	this.x = 0;
-	this.y = 0;
+	this.unit = new Unit(resource, 0);
 
-	this.t = 0;
-	this.zoom = 1;
-	this.acceleration = 0.4;
+	this.xManager = new AccelerationEffectManager(0,-500,1);
+	this.yManager = new AccelerationEffectManager(0,-500,1);
+	this.zoomManager = new AccelerationEffectManager(1,0.5,0.4);
 
 	this.BuildMap(resource);
 };
+
+MyMap.prototype.MouseWheel = function(event){
+	if(0 < event.wheelDelta)
+	{
+		this.ZoomIn();
+	}
+	else
+	{
+		this.ZoomOut();
+	}
+};
+
+MyMap.prototype.ZoomIn = function(){
+	this.zoomManager.Increase();
+}
+
+MyMap.prototype.ZoomOut = function(){
+	this.zoomManager.Decrease();
+}
 
 MyMap.prototype.MouseDown = function(event){
 	if(this.originCeil != null && this.goalCeil != null){
@@ -162,60 +179,42 @@ MyMap.prototype.BuildMap = function(resource){
 };
 
 
-MyMap.prototype.MoveX = function(x){
-	this.x += x;
+MyMap.prototype.MoveX = function(increase){
+	if(increase == 1)
+	{
+		this.xManager.Increase();
+	}
+	else
+	{
+		this.xManager.Decrease();
+	}
 };
 
-MyMap.prototype.MoveY = function(x){
-	this.y += x;
+MyMap.prototype.MoveY = function(increase){
+	if(increase == 1)
+	{
+		this.yManager.Increase();
+	}
+	else
+	{
+		this.yManager.Decrease();
+	}
 };
 
 MyMap.prototype.Update = function()
 {
-	if(this.t != 0)
-	{
-		this.t -= 0.01;
-	}
-
-	if(Math.abs(this.t) < 0.01)
-	{
-		this.t = 0;
-	}
-
-	this.zoom += this.acceleration * this.t * this.t;
-
-	if(this.zoom < 0.5)
-	{
-		this.t = 0;
-		this.zoom = 0.5;
-	}
-
+	this.zoomManager.Update();
+	this.xManager.Update();
+	this.yManager.Update();
 	this.SetZoom();
 };
 
 MyMap.prototype.SetZoom = function(){
 	for (var i = 0; i < map.ceils.length; i++) {
 		for(var l = 0; l < map.ceils[i].length; l++){
-			this.ceils[i][l].SetRelativePosition(this.x, this.y, this.zoom);
+			this.ceils[i][l].SetRelativePosition(this.xManager.val, this.yManager.val, this.zoomManager.val);
 		}
 	}
-	this.unit.SetRelativePosition(this.x, this.y, this.zoom);
+	this.unit.SetRelativePosition(this.xManager.val, this.yManager.val, this.zoomManager.val);
 };
 
-MyMap.prototype.ZoomIn = function(){
-	if(this.acceleration < 0)
-	{
-		this.t = 0;
-	}
-	this.t += 0.4;
-	this.acceleration = 0.4;
-};
-
-MyMap.prototype.ZoomOut = function(){
-	if(0 < this.acceleration)
-	{
-		this.t = 0;
-	}
-	this.t += 0.4;
-	this.acceleration = -0.4;
-};
