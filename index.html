@@ -9,6 +9,8 @@
 <script src="Backend/Model/Ceil.js"></script>
 <script src="Backend/Model/PathFinder/AStarSearch.js"></script>
 <script src="Backend/Model/PathFinder/AStarNode.js"></script>
+<script src="Backend/Model/Base.js"></script>
+<script src="Backend/Model/Team.js"></script>
 <script src="Backend/Model/Unit.js"></script>
 <script src="Backend/Model/AccelerationEffectManager.js"></script>
 <script src="Backend/Model/MyMap.js"></script>
@@ -75,11 +77,24 @@ function setup() {
       stage.addChild(map.ceils[i][l].blockedSprite);
 		}
 	}
-
-  for(var i = 0; i < map.unit.sprites.length; i++)
+  
+  for (var i = 0; i < map.teams.length; i++) 
   {
-    stage.addChild(map.unit.sprites[i]);
+    stage.addChild(map.teams[i].base.sprite);
   }
+
+  for (var i = 0; i < map.teams.length; i++) 
+  {
+    for (var l = 0; l < map.teams[i].units.length; l++) 
+    {
+      for(var c = 0; c < map.teams[i].units[l].sprites.length; c++)
+      {
+        stage.addChild(map.teams[i].units[l].sprites[c]);
+      }
+    }
+  }
+
+
 
 	//renderer.render(stage);
   var manager = new PIXI.interaction.InteractionManager(renderer);
@@ -96,8 +111,13 @@ function gameloop(){
 
 	//Update the current game state
   //state();
-  
-  map.unit.Update();
+  for (var i = 0; i < map.teams.length; i++) 
+  {
+    for (var l = 0; l < map.teams[i].units.length; l++) 
+    {
+      map.teams[i].units[l].Update();
+    }
+  }
   map.Update();
 
 	renderer.render(stage);

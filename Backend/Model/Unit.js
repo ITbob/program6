@@ -1,15 +1,15 @@
-function Unit (resource,red) {
+function Unit (resource,team) {
+	this.team = team;
+	this.team.units.push(this);
+
+	this.target = null;
+	this.radiusTarget = 0;
+
 	var unitBottom = null;
-	var unitTop = null;
-	if(red == 1)
-	{
-		unitBottom = new Sprite(resource["unitBottom.png"]);
-		unitTop = new Sprite(resource["unitTop.png"]);
-	}
-	else{
-		unitBottom = new Sprite(resource["unitBottom2.png"]);
-		unitTop = new Sprite(resource["unitTop2.png"]);
-	}
+	this.top = null;
+
+	unitBottom = new Sprite(resource[this.team.skin1]);
+	this.top = new Sprite(resource[this.team.skin2]);
 
 	var wheels1 = new Sprite(resource["wheels1.png"]);
 	var wheels2 = new Sprite(resource["wheels2.png"]);
@@ -29,7 +29,7 @@ function Unit (resource,red) {
 	this.sprites.push(wheels6);
 	this.sprites.push(wheels7);
 	this.sprites.push(unitBottom);
-	this.sprites.push(unitTop);
+	this.sprites.push(this.top);
 	
 	for (var i = 0; i < this.sprites.length; i++) 
 	{
@@ -62,17 +62,19 @@ function Unit (resource,red) {
 	this.x = 0
 	this.y = 0;
 	this.size = 50;
-	this.radius = 0;
-	this.radiusGoal = 0;
+	this.baseRadius = 0;
+	this.topRadius = 0;
+	this.goalRadius = 0;
 }
 
-Unit.prototype.Rotating = function(){
+Unit.prototype.BaseRotating = function(){
 	for(var i = 0; i < this.base.length; i++){
-		//this.sprites[i].anchor.set(0.5, 0.5);
-		this.base[i].rotation = this.radius;
-		//this.sprites[i].anchor.set(0, 0);
-
+		this.base[i].rotation = this.baseRadius;
 	}
+};
+
+Unit.prototype.TopRotating = function(){
+	this.top.rotation = this.topRadius;
 };
 
 Unit.prototype.Moving = function(){
@@ -98,14 +100,12 @@ Unit.prototype.SetPosition = function(x,y){
 		this.sprites[i].y = this.y;
 		this.sprites[i].width = this.size;
 		this.sprites[i].height = this.size;
-		//this.sprites[i].alpha = 0;
 	}
 };
 
 Unit.prototype.SetRelativePosition = function(x,y,zoom){
 	for(var i = 0; i < this.sprites.length; i++)
 	{
-		//this.sprites[i].alpha = 0;
 		this.sprites[i].x = zoom * (this.x + x + this.size/2);
 		this.sprites[i].y = zoom * (this.y + y + this.size/2);
 		this.sprites[i].width = zoom * this.size;
@@ -121,15 +121,44 @@ Unit.prototype.GetMiddle = function(){
 	return (this.y + this.size/2);
 };
 
-Unit.prototype.GetRadius = function(){
-	var aPoint = new PIXI.Point(this.currentCeil.GetCenter(), this.currentCeil.GetMiddle());
-	var bPoint = new PIXI.Point(this.currentCeil.GetCenter(), this.currentCeil.GetMiddle()+1);
-	var cPoint = new PIXI.Point(this.nextCeil.GetCenter(), this.nextCeil.GetMiddle());
+Unit.prototype.GetRadius = function(ceil){
+	var aPoint = new PIXI.Point(this.x + 25, this.y + 25);
+	var bPoint = new PIXI.Point(this.x + 25, this.y + 26);
+	var cPoint = new PIXI.Point(ceil.GetCenter(), ceil.GetMiddle());
 	var radius = Math.atan2(cPoint.y - bPoint.y, cPoint.x - bPoint.x) - Math.atan2(aPoint.y - bPoint.y, aPoint.x - bPoint.x);
 	return radius;
 };
 
 Unit.prototype.Update = function(){
+	if(this.currentCeil != null && this.target != null)
+	{
+		this.targetRadius = this.GetRadius(this.target);
+		if((((2*Math.PI) - this.targetRadius) + this.baseRadius) < Math.abs(this.targetRadius - this.baseRadius))
+		{
+			this.targetRadius = this.targetRadius - (2*Math.PI); 
+		}
+
+		if(this.topRadius != this.targetRadius)
+		{
+
+			if(this.topRadius < this.targetRadius)
+			{
+				this.topRadius += 0.05;
+			}
+			else
+			{
+				this.topRadius -= 0.05;
+			}
+
+			if(Math.abs(this.topRadius - this.targetRadius) < 0.05)
+			{
+				this.topRadius = this.targetRadius;
+			}
+
+			this.TopRotating();
+		}
+	}
+
 	if(this.goalCeils.length != 0 || this.nextCeil != null)
 	{
 		if(this.nextCeil == null)
@@ -139,42 +168,40 @@ Unit.prototype.Update = function(){
 			
 			if(this.currentCeil == null)
 			{
-				this.radiusGoal = this.radius;
+				this.goalRadius = this.baseRadius;
 			}
 			else
 			{
-				this.radiusGoal = this.GetRadius();
-				console.log("pivot: " + this.sprites[0].pivot.x + ", " + this.sprites[0].pivot.y);
+				this.goalRadius = this.GetRadius(this.nextCeil);
+				if((((2*Math.PI) - this.goalRadius) + this.baseRadius) < Math.abs(this.goalRadius - this.baseRadius))
+				{
+					this.goalRadius = this.goalRadius -(2*Math.PI); 
+				}
 			}
 		}
 		else
 		{
-			if(this.radius != this.radiusGoal)
+			if(this.baseRadius != this.goalRadius)
 			{
-				if(this.radius < this.radiusGoal)
+
+				if(this.baseRadius < this.goalRadius)
 				{
-					this.radius +=0.01;
+					this.baseRadius +=0.01;
 				}
 				else
 				{
-					this.radius -=0.01;
+					this.baseRadius -=0.01;
 				}
 
-				if(Math.abs(this.radius - this.radiusGoal) < 0.01)
+				if(Math.abs(this.baseRadius - this.goalRadius) < 0.01)
 				{
-					this.radius = this.radiusGoal;
+					this.baseRadius = this.goalRadius;
 				}
 
-				this.Rotating();
-				console.log("radius " + this.radius);
-				console.log("radius goal " + this.radiusGoal);
+				this.BaseRotating();
 			}
 			else
 			{
-/*				for (var i = 0; i < this.sprites.length; i++) 
-				{
-					this.sprites[i].pivot.set(this.sprites[i].x,this.sprites[i].y);
-				}	*/
 
 				if(this.nextCeil.GetCenter() < this.GetCenter())
 				{

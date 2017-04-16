@@ -1,13 +1,32 @@
 function MyMap(resource){
 	this.ceils = [];
+
 	this.aStarSearch = new AStarSearch();
-	this.unit = new Unit(resource, 0);
 
 	this.xManager = new AccelerationEffectManager(0,-500,1);
 	this.yManager = new AccelerationEffectManager(0,-500,1);
 	this.zoomManager = new AccelerationEffectManager(1,0.5,0.4);
 
 	this.BuildMap(resource);
+
+	this.teams = [];
+	var redTeam = new Team("unitBottom.png", "unitTop.png", resource, this.ceils[0][5]);
+	var blueTeam = new Team("unitBottom2.png", "unitTop2.png", resource, this.ceils[14][5]);
+
+	this.teams.push(redTeam);
+	this.teams.push(blueTeam);
+
+	var unit = new Unit(resource, redTeam);
+	
+	var unit2 = new Unit(resource, blueTeam);
+	unit2.currentCeil = this.ceils[2][5];
+	unit2.SetPosition(this.ceils[2][5].x,this.ceils[2][5].y);
+
+	var unit3 = new Unit(resource, blueTeam);
+	unit3.currentCeil = this.ceils[7][5];
+	unit3.SetPosition(this.ceils[7][5].x,this.ceils[7][5].y);
+
+	unit.target = unit2.currentCeil;
 };
 
 MyMap.prototype.MouseWheel = function(event){
@@ -47,15 +66,15 @@ MyMap.prototype.MouseDown = function(event){
 				{
 					this.originCeil = this.ceils[i][l];
 					//this.originCeil.selectedSprite.alpha = 1;
-					this.unit.SetPosition(this.originCeil.x,this.originCeil.y);
-					console.log("allo");
+					this.teams[0].units[0].SetPosition(this.originCeil.x,this.originCeil.y);
+					this.teams[0].units[0].currentCeil = this.originCeil;
 				}
 				else
 				{
 					this.goalCeil = this.ceils[i][l];
 					this.goalCeil.selectedSprite.alpha = 1;
 					var path = this.aStarSearch.FindPath(new AStarNode(this.originCeil), new AStarNode(this.goalCeil));
-					this.unit.goalCeils = path;
+					this.teams[0].units[0].goalCeils = path;
 				}
 				break;
 			}
@@ -215,6 +234,11 @@ MyMap.prototype.SetZoom = function(){
 			this.ceils[i][l].SetRelativePosition(this.xManager.val, this.yManager.val, this.zoomManager.val);
 		}
 	}
-	this.unit.SetRelativePosition(this.xManager.val, this.yManager.val, this.zoomManager.val);
+	for (var i = 0; i < this.teams.length; i++) {
+		this.teams[i].base.SetRelativePosition();
+		for (var l = 0; l < this.teams[i].units.length; l++) {
+			this.teams[i].units[l].SetRelativePosition(this.xManager.val, this.yManager.val, this.zoomManager.val);
+		}
+	}
 };
 

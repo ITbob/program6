@@ -39,7 +39,7 @@ function Ceil(resource){
 Ceil.prototype.SetBlocked = function(){
 	this.blockedSprite.alpha = 1;
 	this.isBlocked = true;
-}
+};
 
 Ceil.prototype.GetNeighbourhood = function()
 {
