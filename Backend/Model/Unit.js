@@ -1,4 +1,9 @@
-function Unit (resource,team) {
+function Unit (resource, playground,team) {
+	this.dusts = [];
+	this.playground = playground;
+	this.resource = resource;
+	this.i = 0;
+
 	this.team = team;
 	this.team.units.push(this);
 
@@ -18,7 +23,6 @@ function Unit (resource,team) {
 	var wheels5 = new Sprite(resource["wheels5.png"]);
 	var wheels6 = new Sprite(resource["wheels6.png"]);
 	var wheels7 = new Sprite(resource["wheels7.png"]);
-
 
 	this.sprites = [];
 	this.sprites.push(wheels1);
@@ -68,16 +72,19 @@ function Unit (resource,team) {
 }
 
 Unit.prototype.BaseRotating = function(){
-	for(var i = 0; i < this.base.length; i++){
+	for(var i = 0; i < this.base.length; i++)
+	{
 		this.base[i].rotation = this.baseRadius;
 	}
 };
 
-Unit.prototype.TopRotating = function(){
+Unit.prototype.TopRotating = function()
+{
 	this.top.rotation = this.topRadius;
 };
 
-Unit.prototype.Moving = function(){
+Unit.prototype.Moving = function()
+{
 	var previous = this.currentWheel; 
 
 	this.currentWheel += 1;
@@ -88,7 +95,37 @@ Unit.prototype.Moving = function(){
 
 	this.wheels[this.currentWheel].alpha = 1;
 	this.wheels[previous].alpha = 0;
+	
+	this.i += 1;
 
+	if(this.i % 12 == 0)
+	{
+		var dust = new Dust(this.playground, this.resource, this.x + 3,this.y+20);
+		var dust2 = new Dust(this.playground, this.resource, this.x + 35, this.y+20);
+
+		for (var i = 0; i < dust.sprites.length; i++) 
+		{
+			this.playground.addChild(dust.sprites[i]);
+			this.playground.addChild(dust2.sprites[i]);
+		}
+
+		this.dusts.push(dust);
+		this.dusts.push(dust2);
+	}
+
+	var indexes = [];
+	for (var i = 0; i < this.dusts.length; i++) 
+	{
+		if(this.dusts[i].isDone == 1)
+		{
+			indexes.push(i);
+		}
+	}
+
+	for (var i = 0; i < indexes.length; i++) 
+	{
+		this.dusts.splice([indexes[i]],1);
+	}
 };
 
 Unit.prototype.SetPosition = function(x,y){
@@ -110,6 +147,9 @@ Unit.prototype.SetRelativePosition = function(x,y,zoom){
 		this.sprites[i].y = zoom * (this.y + y + this.size/2);
 		this.sprites[i].width = zoom * this.size;
 		this.sprites[i].height = zoom * this.size;
+	}
+	for (var i = 0; i < this.dusts.length; i++) {
+		this.dusts[i].SetRelativePosition(x,y,zoom);
 	}
 };
 
@@ -237,6 +277,14 @@ Unit.prototype.Update = function(){
 				}
 			}
 			this.Moving();
+		}
+	}
+
+	if(0 < this.dusts.length)
+	{
+		for (var i = 0; i < this.dusts.length; i++) 
+		{
+			this.dusts[i].Update();
 		}
 	}
 };

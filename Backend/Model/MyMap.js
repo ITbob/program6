@@ -1,4 +1,4 @@
-function MyMap(resource){
+function MyMap(resource,playground){
 	this.ceils = [];
 
 	this.aStarSearch = new AStarSearch();
@@ -16,13 +16,13 @@ function MyMap(resource){
 	this.teams.push(redTeam);
 	this.teams.push(blueTeam);
 
-	var unit = new Unit(resource, redTeam);
+	var unit = new Unit(resource, playground, redTeam);
 	
-	var unit2 = new Unit(resource, blueTeam);
+	var unit2 = new Unit(resource, playground, blueTeam);
 	unit2.currentCeil = this.ceils[2][5];
 	unit2.SetPosition(this.ceils[2][5].x,this.ceils[2][5].y);
 
-	var unit3 = new Unit(resource, blueTeam);
+	var unit3 = new Unit(resource, playground, blueTeam);
 	unit3.currentCeil = this.ceils[7][5];
 	unit3.SetPosition(this.ceils[7][5].x,this.ceils[7][5].y);
 
