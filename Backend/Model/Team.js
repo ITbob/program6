@@ -1,6 +1,8 @@
-function Team(skin1, skin2, resource, location){
+function Team(bottomTankSkin, topTankSkin, truckSkin, resource, location){
 	this.units = [];
-	this.skin1 = skin1;
-	this.skin2 = skin2;
+	this.bottomTankSkin = bottomTankSkin;
+	this.topTankSkin = topTankSkin;
+	this.truckSkin = truckSkin;
+
 	this.base = new Base(resource, location);
 };

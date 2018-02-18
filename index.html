@@ -1,125 +1,168 @@
-<!doctype html>
-<meta charset="utf-8">
+    <!doctype html>
+    <script src="Backend/Model/Missile.js"></script>
+    <meta charset="utf-8">
 <title>Program6</title>
 <body>
-
-<script src="pixi.js/bin/pixi.js"></script>
+<style>
+    body {
+        background-color: #b5f990;
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
+<script src="Pixi/bin/pixi.js"></script>
+<script src="Pixi/bin/pixi-layers.js"></script>
+<script src="Backend/LayoutContext.js"></script>
 <script src="Backend/Model/Item.js"></script>
+<script src="Backend/Model/DiamondField.js"></script>
 <script src="Backend/Toolbox/Rectangle.js"></script>
+<script src="Backend/Model/Explosion.js"></script>
 <script src="Backend/Model/Ceil.js"></script>
+<script src="Backend/Model/DiamondLight.js"></script>
+<script src="Backend/Model/Diamond.js"></script>
 <script src="Backend/Model/PathFinder/AStarSearch.js"></script>
 <script src="Backend/Model/PathFinder/AStarNode.js"></script>
 <script src="Backend/Model/Dust.js"></script>
 <script src="Backend/Model/Base.js"></script>
 <script src="Backend/Model/Team.js"></script>
+<script src="Backend/Model/Mobile.js"></script>
+<script src="Backend/Model/Truck.js"></script>
 <script src="Backend/Model/Unit.js"></script>
+<script src="Backend/Model/UnitCanon.js"></script>
+<script src="Backend/Model/Missile.js"></script>
 <script src="Backend/Model/AccelerationEffectManager.js"></script>
+<script src="Backend/Model/UnitMenu.js"></script>
+<script src="Backend/Model/UnitMenuItem.js"></script>
+<script src="Backend/Model/UnitSeparatorMenu.js"></script>
+<script src="Backend/Model/HandOption.js"></script>
 <script src="Backend/Model/MyMap.js"></script>
 <script src="Backend/Toolbox/Keyboardhelper.js"></script>
 <script>
 
-//Create a Pixi stage and renderer and add the 
-//renderer.view to the DOM
-//Aliases
-var Container = PIXI.Container,
-    autoDetectRenderer = PIXI.autoDetectRenderer,
-    loader = PIXI.loader,
-    resources = PIXI.loader.resources,
-    Sprite = PIXI.Sprite;
+    //Create a Pixi stage and renderer and add the
+    //renderer.view to the DOM
+    //Aliases
+    var Container = PIXI.Container,
+        autoDetectRenderer = PIXI.autoDetectRenderer,
+        loader = PIXI.loader,
+        resources = PIXI.loader.resources,
+        TextureCache = PIXI.utils.TextureCache,
+        Texture = PIXI.Texture,
+        Sprite = PIXI.Sprite,
+        Text = PIXI.Text,
+        Graphics = PIXI.Graphics;
 
-//Create a Pixi stage and renderer and add the 
-//renderer.view to the DOM
-var stage = new Container(),
-    renderer = autoDetectRenderer(600, 600);
-document.body.appendChild(renderer.view);
+    //Create a Pixi stage and renderer and add the
+    //renderer.view to the DOM
+    var stage = new Container(),
+        renderer = autoDetectRenderer(2000, 2000);
+    document.body.appendChild(renderer.view);
 
-//load an image and run the `setup` function when it's done
-loader.add("Backend/Images/Program6.json").load(setup);
-var map;
+    //load an image and run the `setup` function when it's done
+    loader.add("Backend/Images/Program6.json").load(setup);
+    var map;
 
-var left = Keyboardhelper(37),
-    up = Keyboardhelper(38),
-    right = Keyboardhelper(39),
-    down = Keyboardhelper(40);
+    var left = Keyboardhelper(37),
+        up = Keyboardhelper(38),
+        right = Keyboardhelper(39),
+        down = Keyboardhelper(40);
 
-//This `setup` function will run when the image has loaded
-function setup() {
+    //This `setup` function will run when the image has loaded
+    function setup() {
+        //PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.SCALE_MODE;
+        var id = resources["Backend/Images/Program6.json"].textures;
 
-	id = resources["Backend/Images/Program6.json"].textures;
+        var bottomGroup = new PIXI.display.Group(0,false);
+        var bottomUnitGroup = new PIXI.display.Group(1,false);
+        var middleGroup = new PIXI.display.Group(2,false);
+        var topUnitGroup = new PIXI.display.Group(3,false);
+        var topGroup = new PIXI.display.Group(4,false);
 
-	map = new MyMap(id,stage);
- 	
-  	up.press = function() {
-      map.MoveY(1);
-  	};
 
-    down.press = function() {
-      map.MoveY(0);
-  	};
+        stage = new PIXI.display.Stage();
+        stage.group.enableSort = true;
 
-    left.press = function() {
-    	map.MoveX(1);
-  	};
+        stage.addChild(new PIXI.display.Layer(bottomGroup));
+        stage.addChild(new PIXI.display.Layer(bottomUnitGroup));
+        stage.addChild(new PIXI.display.Layer(middleGroup));
+        stage.addChild(new PIXI.display.Layer(topUnitGroup));
+        stage.addChild(new PIXI.display.Layer(topGroup));
 
-    right.press = function() {
-    	map.MoveX(0);
-  	};
+        var layoutContext = new LayoutContext(bottomGroup, bottomUnitGroup, middleGroup, topUnitGroup, topGroup);
 
-	stage.addChild(rectangle(0, 0, 600, 600, 0xb5f990, 0x000000, 2));
-	
+        var background = rectangle(0, 0, 2000, 2000, 0xb5f990, 0x000000, 2);
+        background.parentGroup =bottomGroup;
+        stage.addChild(background);
 
-	for (var i = 0; i < map.ceils.length; i++) 
-	{
-		for(var l = 0; l < map.ceils[i].length; l++)
-		{
-			stage.addChild(map.ceils[i][l].sprite);
-			stage.addChild(map.ceils[i][l].selectedSprite);
-			stage.addChild(map.ceils[i][l].pathSprite);
-      stage.addChild(map.ceils[i][l].blockedSprite);
-		}
-	}
-  
-  for (var i = 0; i < map.teams.length; i++) 
-  {
-    stage.addChild(map.teams[i].base.sprite);
-  }
+        map = new MyMap(id, stage,layoutContext);
 
-  for (var i = 0; i < map.teams.length; i++) 
-  {
-    for (var l = 0; l < map.teams[i].units.length; l++) 
-    {
-      for(var c = 0; c < map.teams[i].units[l].sprites.length; c++)
-      {
-        stage.addChild(map.teams[i].units[l].sprites[c]);
-      }
+        up.press = function () {
+            map.MoveY(1);
+        };
+
+        down.press = function () {
+            map.MoveY(0);
+        };
+
+        left.press = function () {
+            map.MoveX(1);
+        };
+
+        right.press = function () {
+            map.MoveX(0);
+        };
+
+        for (var i = 0; i < map.teams.length; i++)
+        {
+            stage.addChild(map.teams[i].base.sprite);
+            map.teams[i].base.sprite.parentGroup = bottomUnitGroup;
+        }
+
+        //stage.addChild(map.handOption.unActivatedSprite);
+        // stage.addChild(map.handOption.activatedSprite);
+        for (var i = 0; i < map.unitMenu.items.length; i++)
+        {
+            map.unitMenu.items[i].sprite.parentGroup = topGroup;
+            map.unitMenu.items[i].sprite2.parentGroup = topGroup;
+
+            stage.addChild(map.unitMenu.items[i].sprite);
+            stage.addChild(map.unitMenu.items[i].sprite2);
+        }
+
+        for (var i = 0; i < map.unitMenu.separators.length; i++)
+        {
+            map.unitMenu.separators[i].sprite.parentGroup = topGroup;
+            stage.addChild(map.unitMenu.separators[i].sprite);
+        }
+
+        //renderer.render(stage);
+        var manager = new PIXI.interaction.InteractionManager(renderer);
+        manager.on('mousedown', map.MouseDown.bind(map), false);
+        manager.on('mousemove', map.MouseMove.bind(map), false);
+        manager.on('mouseup', map.MouseUp.bind(map), false);
+
+        window.addEventListener('mousewheel', map.MouseWheel.bind(map), false);
+
+        gameloop();
     }
-  }
 
-	//renderer.render(stage);
-  var manager = new PIXI.interaction.InteractionManager(renderer);
-  manager.on('mousedown', map.MouseDown.bind(map), false);
-  window.addEventListener('mousewheel', map.MouseWheel.bind(map), false);
+    function gameloop() {
 
- 	gameloop();
-}
+        requestAnimationFrame(gameloop);
 
-function gameloop(){
+        //Update the current game state
+        //state();
+        for (var i = 0; i < map.teams.length; i++)
+        {
+            for (var l = 0; l < map.teams[i].units.length; l++)
+            {
+                map.teams[i].units[l].Update();
+            }
+        }
+        map.Update();
 
-	requestAnimationFrame(gameloop);
-
-	//Update the current game state
-  //state();
-  for (var i = 0; i < map.teams.length; i++) 
-  {
-    for (var l = 0; l < map.teams[i].units.length; l++) 
-    {
-      map.teams[i].units[l].Update();
+        renderer.render(stage);
     }
-  }
-  map.Update();
-
-	renderer.render(stage);
-}
 
 </script>
 </body>

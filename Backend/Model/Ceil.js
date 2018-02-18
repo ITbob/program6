@@ -3,7 +3,6 @@ function Ceil(resource){
 	this.selectedId = "selectedCeil.png";
 	this.pathId = "pathCeil.png";
 	this.blockedId = "blockedCeil.png";
-
 	this.sprite = new Sprite(resource[this.id]);
 	this.sprite.interactive = true;
 	
@@ -34,6 +33,42 @@ function Ceil(resource){
 	this.rightBottom = null;
 	this.bottom = null;
 	this.leftBottom = null;
+    this.decoratonSprite = null;
+    this.DiamondField = null;
+    //this.DefineDecoration(resource);
+};
+
+Ceil.prototype.DefineDiamondField = function (playground, resource,layoutContext) {
+	this.DiamondField = new DiamondField(playground,resource,layoutContext,this);
+};
+
+Ceil.prototype.DefineDecoration = function (resource) {
+	var random = Math.random();
+	if(random < 0.3 && !this.isBlocked){
+		var decorationRandom = Math.random();
+
+		if(decorationRandom <= 0.3)
+		{
+			this.decoratonSprite = new Sprite(resource["stone.png"]);
+		}
+		else if(decorationRandom <= 0.8)
+		{
+            this.decoratonSprite = new Sprite(resource["flower.png"]);
+		}
+		else
+		{
+            this.decoratonSprite = new Sprite(resource["water.png"]);
+		}
+        //var rotationRandom = Math.random();
+        //this.decoratonSprite.x = this.x;
+        //this.decoratonSprite.y = this.y;
+        //this.decoratonSprite.width = 50;
+        //this.decoratonSprite.height = 50;
+        //this.decoratonSprite.pivot.set(this.GetCenter(),this.GetMiddle());
+        //this.decoratonSprite.rotation = rotationRandom * 360;
+        //this.decorationX = this.decoratonSprite.x;
+        //this.decorationY = this.decoratonSprite.y;
+    }
 };
 
 Ceil.prototype.SetBlocked = function(){
@@ -120,7 +155,25 @@ Ceil.prototype.SetPosition = function(x,y){
 
 	this.blockedSprite.x = x;
 	this.blockedSprite.y = y;
+
+	if(this.decoratonSprite != null)
+	{
+        this.decoratonSprite.x = x;
+        this.decoratonSprite.y = y;
+	}
+
+    if(this.DiamondField != null)
+    {
+        this.DiamondField.x = x;
+        this.DiamondField.y = y;
+    }
 };
+
+Ceil.prototype.Update = function () {
+	if(this.DiamondField != null){
+		this.DiamondField.Update();
+	}
+}
 
 Ceil.prototype.SetRelativePosition = function(x,y,zoom){
 	this.sprite.x = zoom * (this.x + x);
@@ -142,4 +195,17 @@ Ceil.prototype.SetRelativePosition = function(x,y,zoom){
 	this.blockedSprite.y = zoom * (this.y + y);
 	this.blockedSprite.width = zoom * this.size;
 	this.blockedSprite.height = zoom * this.size;
+
+    if(this.decoratonSprite != null)
+    {
+        this.decoratonSprite.x = zoom * (this.x + x );
+        this.decoratonSprite.y = zoom * (this.y + y );
+        this.decoratonSprite.width = zoom * this.size;
+        this.decoratonSprite.height = zoom * this.size;
+    }
+
+    if(this.DiamondField != null)
+    {
+        this.DiamondField.SetRelativePosition(x,y,zoom);
+	}
 };
