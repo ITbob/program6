@@ -1,30 +1,24 @@
-function Unit (resource, playground,team) {
-	this.dusts = [];
-	this.playground = playground;
-	this.resource = resource;
-	this.i = 0;
+function Unit (resource, playground,team, layoutContext) {
+	Mobile.call(this, resource, playground,team, layoutContext);
 
-	this.team = team;
-	this.team.units.push(this);
+	this.canon = new UnitCanon(resource,this);
+    this.restoringTimespan = 1000;
 
-	this.target = null;
-	this.radiusTarget = 0;
+	var unitBottom = new Sprite(resource[this.team.bottomTankSkin]);
+	this.top = new Sprite(resource[this.team.topTankSkin]);
 
-	var unitBottom = null;
-	this.top = null;
+	this.missiles = [];
 
-	unitBottom = new Sprite(resource[this.team.skin1]);
-	this.top = new Sprite(resource[this.team.skin2]);
+	var wheels1 = new Sprite(resource["track1.png"]);
+	var wheels2 = new Sprite(resource["track2.png"]);
+	var wheels3 = new Sprite(resource["track3.png"]);
+	var wheels4 = new Sprite(resource["track4.png"]);
+	var wheels5 = new Sprite(resource["track5.png"]);
+	var wheels6 = new Sprite(resource["track6.png"]);
+	var wheels7 = new Sprite(resource["track7.png"]);
 
-	var wheels1 = new Sprite(resource["wheels1.png"]);
-	var wheels2 = new Sprite(resource["wheels2.png"]);
-	var wheels3 = new Sprite(resource["wheels3.png"]);
-	var wheels4 = new Sprite(resource["wheels4.png"]);
-	var wheels5 = new Sprite(resource["wheels5.png"]);
-	var wheels6 = new Sprite(resource["wheels6.png"]);
-	var wheels7 = new Sprite(resource["wheels7.png"]);
-
-	this.sprites = [];
+    this.sprites.push(this.top);
+    this.sprites.push(this.selectedSprite);
 	this.sprites.push(wheels1);
 	this.sprites.push(wheels2);
 	this.sprites.push(wheels3);
@@ -33,14 +27,12 @@ function Unit (resource, playground,team) {
 	this.sprites.push(wheels6);
 	this.sprites.push(wheels7);
 	this.sprites.push(unitBottom);
-	this.sprites.push(this.top);
-	
+
 	for (var i = 0; i < this.sprites.length; i++) 
 	{
 		this.sprites[i].pivot.set(this.sprites[i].x + this.sprites[i].width/2,this.sprites[i].y + this.sprites[i].height/2);
-	}	
+	}
 
-	this.wheels = [];
 	this.wheels.push(wheels1);
 	this.wheels.push(wheels2);
 	this.wheels.push(wheels3);
@@ -49,8 +41,6 @@ function Unit (resource, playground,team) {
 	this.wheels.push(wheels6);
 	this.wheels.push(wheels7);
 
-	this.base = [];
-	this.base.push(unitBottom);
 	this.base.push(wheels1);
 	this.base.push(wheels2);
 	this.base.push(wheels3);
@@ -58,118 +48,69 @@ function Unit (resource, playground,team) {
 	this.base.push(wheels5);
 	this.base.push(wheels6);
 	this.base.push(wheels7);
+    this.base.push(unitBottom);
 
-	this.currentWheel = 0;
-	this.goalCeils = [];
-	this.currentCeil = null;
-	this.nextCeil = null;
-	this.x = 0
-	this.y = 0;
-	this.size = 50;
-	this.baseRadius = 0;
-	this.topRadius = 0;
-	this.goalRadius = 0;
-}
 
-Unit.prototype.BaseRotating = function(){
-	for(var i = 0; i < this.base.length; i++)
-	{
-		this.base[i].rotation = this.baseRadius;
-	}
+    for (var i = 1; i <  this.sprites.length; i++)
+    {
+        playground.addChild(this.sprites[i]);
+    }
+
+    playground.addChild(this.canon.sprite);
+
+    for (var i = 0; i <  this.canon.firingSprites.length; i++)
+    {
+        playground.addChild(this.canon.firingSprites[i]);
+        this.canon.firingSprites[i].parentGroup = this.layoutContext.topUnitGroup;
+    }
+
+    playground.addChild(this.sprites[0]);
+
+    for (var i = 1; i <  this.base.length; i++)
+    {
+        this.base[i].parentGroup = this.layoutContext.bottomUnitGroup;
+    }
+    this.top.parentGroup = this.layoutContext.topUnitGroup;
+    this.canon.sprite.parentGroup = this.layoutContext.topUnitGroup;
+
+};
+
+
+Unit.prototype = Object.create(Mobile.prototype);
+
+Unit.prototype.constructor = Unit;
+
+Unit.prototype.Fire = function ()
+{
+    if(200 <= this.restoringTimespan)
+    {
+        this.restoringTimespan = 0;
+        this.canon.isDone = 0;
+        this.fired = true;
+    }
+};
+
+Unit.prototype.IsFiring = function () {
+    if(this.canon.isDone != 1)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 };
 
 Unit.prototype.TopRotating = function()
 {
-	this.top.rotation = this.topRadius;
+    this.top.rotation = this.topRadius;
+    if(!this.IsFiring())
+    {
+        this.canon.SetRotation(this.topRadius);
+    }
 };
 
-Unit.prototype.Moving = function()
-{
-	var previous = this.currentWheel; 
-
-	this.currentWheel += 1;
-	if(this.wheels.length <= this.currentWheel)
-	{
-		this.currentWheel = 0;
-	}
-
-	this.wheels[this.currentWheel].alpha = 1;
-	this.wheels[previous].alpha = 0;
-	
-	this.i += 1;
-
-	if(this.i % 12 == 0)
-	{
-		var dust = new Dust(this.playground, this.resource, this.x + 3,this.y+20);
-		var dust2 = new Dust(this.playground, this.resource, this.x + 35, this.y+20);
-
-		for (var i = 0; i < dust.sprites.length; i++) 
-		{
-			this.playground.addChild(dust.sprites[i]);
-			this.playground.addChild(dust2.sprites[i]);
-		}
-
-		this.dusts.push(dust);
-		this.dusts.push(dust2);
-	}
-
-	var indexes = [];
-	for (var i = 0; i < this.dusts.length; i++) 
-	{
-		if(this.dusts[i].isDone == 1)
-		{
-			indexes.push(i);
-		}
-	}
-
-	for (var i = 0; i < indexes.length; i++) 
-	{
-		this.dusts.splice([indexes[i]],1);
-	}
-};
-
-Unit.prototype.SetPosition = function(x,y){
-	this.x = x;
-	this.y = y;
-	for(var i = 0; i < this.sprites.length; i++)
-	{
-		this.sprites[i].x = this.x;
-		this.sprites[i].y = this.y;
-		this.sprites[i].width = this.size;
-		this.sprites[i].height = this.size;
-	}
-};
-
-Unit.prototype.SetRelativePosition = function(x,y,zoom){
-	for(var i = 0; i < this.sprites.length; i++)
-	{
-		this.sprites[i].x = zoom * (this.x + x + this.size/2);
-		this.sprites[i].y = zoom * (this.y + y + this.size/2);
-		this.sprites[i].width = zoom * this.size;
-		this.sprites[i].height = zoom * this.size;
-	}
-	for (var i = 0; i < this.dusts.length; i++) {
-		this.dusts[i].SetRelativePosition(x,y,zoom);
-	}
-};
-
-Unit.prototype.GetCenter = function(){
-	return (this.x + this.size/2);
-};
-
-Unit.prototype.GetMiddle = function(){
-	return (this.y + this.size/2);
-};
-
-Unit.prototype.GetRadius = function(ceil){
-	var aPoint = new PIXI.Point(this.x + 25, this.y + 25);
-	var bPoint = new PIXI.Point(this.x + 25, this.y + 26);
-	var cPoint = new PIXI.Point(ceil.GetCenter(), ceil.GetMiddle());
-	var radius = Math.atan2(cPoint.y - bPoint.y, cPoint.x - bPoint.x) - Math.atan2(aPoint.y - bPoint.y, aPoint.x - bPoint.x);
-	return radius;
-};
-
-Unit.prototype.Update = function(){
+Unit.prototype.TopRotation = function(){
 	if(this.currentCeil != null && this.target != null)
 	{
 		this.targetRadius = this.GetRadius(this.target);
@@ -195,96 +136,93 @@ Unit.prototype.Update = function(){
 				this.topRadius = this.targetRadius;
 			}
 
+
 			this.TopRotating();
 		}
 	}
+};
 
-	if(this.goalCeils.length != 0 || this.nextCeil != null)
-	{
-		if(this.nextCeil == null)
-		{
-			this.nextCeil = this.goalCeils[0];
-			this.goalCeils.splice(0,1);
-			
-			if(this.currentCeil == null)
-			{
-				this.goalRadius = this.baseRadius;
-			}
-			else
-			{
-				this.goalRadius = this.GetRadius(this.nextCeil);
-				if((((2*Math.PI) - this.goalRadius) + this.baseRadius) < Math.abs(this.goalRadius - this.baseRadius))
-				{
-					this.goalRadius = this.goalRadius -(2*Math.PI); 
-				}
+Unit.prototype.SetRelativePosition = function(x,y,zoom)
+{
+    if(this.canon != null)
+    {
+        this.canon.SetRelativePosition(x,y,zoom);
+    }
+
+    for(var i = 0; i < this.sprites.length; i++)
+    {
+        this.sprites[i].x = zoom * (this.x + x + this.subsize/2);
+        this.sprites[i].y = zoom * (this.y + y + this.subsize/2);
+        this.sprites[i].width = zoom * this.subsize;
+        this.sprites[i].height = zoom * this.subsize;
+    }
+
+    for (var i = 0; i < this.dusts.length; i++)
+    {
+        if(this.dusts[i] != null
+            && this.dusts[i].isDone == 0)
+        {
+            this.dusts[i].SetRelativePosition(x,y,zoom);
+        }
+    }
+
+    if(0 < this.missiles.length)
+    {
+        for (var i = 0; i < this.missiles.length; i++)
+        {
+            this.missiles[i].SetRelativePosition(x,y,zoom);
+        }
+    }
+};
+
+Unit.prototype.Analyse = function(){
+    var ceils = this.currentCeil.GetNeighbourhood();
+}
+
+Unit.prototype.Update = function()
+{
+
+    if(this.restoringTimespan < 200)
+    {
+        this.restoringTimespan +=1;
+    }
+
+	this.DustUpdate();
+	this.TopRotation();
+	this.BaseUpdate();
+	this.Fire();
+
+    if(this.canon != null)
+    {
+        this.canon.Update();
+
+        if(this.fired)
+        {
+        	this.fired = false;
+        	if(this.target != undefined)
+        	{
+        		var missile = new Missile(this.resource, this.layoutContainer,this.layoutContext, this.x+this.subsize/2,this.y+this.subsize/2, this.target);
+        		//this.canon.
+                this.missiles.push(missile);
 			}
 		}
-		else
-		{
-			if(this.baseRadius != this.goalRadius)
-			{
 
-				if(this.baseRadius < this.goalRadius)
+        if(0 < this.missiles.length)
+        {
+            var indexes = [];
+        	for (var i = 0; i < this.missiles.length; i++)
+        	{
+				this.missiles[i].Update();
+				if(this.missiles[i].isDone)
 				{
-					this.baseRadius +=0.01;
-				}
-				else
-				{
-					this.baseRadius -=0.01;
-				}
-
-				if(Math.abs(this.baseRadius - this.goalRadius) < 0.01)
-				{
-					this.baseRadius = this.goalRadius;
-				}
-
-				this.BaseRotating();
+                    this.missiles[i].Clear();
+                    indexes.push(i);
+                }
 			}
-			else
-			{
-
-				if(this.nextCeil.GetCenter() < this.GetCenter())
-				{
-					this.x -= 1;
-				}
-				else if(this.GetCenter() < this.nextCeil.GetCenter())
-				{
-					this.x += 1;
-				}
-
-				if(Math.abs(this.GetCenter() - this.nextCeil.GetCenter()) < 1){
-					this.x = this.nextCeil.x;
-				}
-
-				if(this.nextCeil.GetMiddle() < this.GetMiddle())
-				{
-					this.y -= 0.65;
-				}
-				else if(this.GetMiddle() < this.nextCeil.GetMiddle())
-				{
-					this.y += 0.65;
-				}
-
-				if(Math.abs(this.GetMiddle() - this.nextCeil.GetMiddle()) < 1){
-					this.y = this.nextCeil.y;
-				}
-
-				if(this.GetMiddle() == this.nextCeil.GetMiddle() 
-					&& this.GetCenter() == this.nextCeil.GetCenter())
-				{
-					this.currentCeil = this.nextCeil;
-					this.nextCeil = null;
-				}
-			}
-			this.Moving();
+            for (var i =indexes.length-1; -1 < i; i--)
+            {
+                this.dusts.splice(indexes[i],1);
+            }
 		}
-	}
-
-	if(0 < this.dusts.length)
-	{
-		for (var i = 0; i < this.dusts.length; i++) 
-		{
-			this.dusts[i].Update();
-		}
-	}
+    }
 };

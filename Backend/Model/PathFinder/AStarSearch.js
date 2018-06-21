@@ -1,6 +1,6 @@
 function AStarSearch(){
 
-};
+}
 
 AStarSearch.prototype.ConstructPath = function(node){
 	var path = [];
@@ -81,16 +81,17 @@ AStarSearch.prototype.FindPath = function(startNode, goalNode){
 
 	while(0 < openList.length)
 	{
-		console.log("---> GET " + ((openList[0].ceil.row)+1) + " cl:" + ((openList[0].ceil.column)+1))
+		console.log("---> GET " + ((openList[0].ceil.hexAxial.q)+1) + " cl:" + ((openList[0].ceil.hexAxial.r)+1));
 		var currentNode = openList[0];
 		openList.splice(0,1);
 
 		if(currentNode.ceil == goalNode.ceil)
 		{
-			return this.ConstructPath(currentNode);
+            return this.ConstructPath(currentNode);
 		}
 
-		var ceilNeighbourhood = currentNode.ceil.GetNeighbourhood(); 
+		var ceilNeighbourhood = currentNode.ceil.GetNeighbourhood();
+        console.log("---> length " + ceilNeighbourhood.length);
 
 		for(var i = 0; i < ceilNeighbourhood.length; i++)
 		{
