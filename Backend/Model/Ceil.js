@@ -1,5 +1,5 @@
 
-/*
+
 function Ceil(resource){
 	this.id = "ceil.png";
 	this.selectedId = "selectedCeil.png";
@@ -211,6 +211,3 @@ Ceil.prototype.SetRelativePosition = function(x,y,zoom){
         this.DiamondField.SetRelativePosition(x,y,zoom);
 	}
 };
-
-
-	*/
